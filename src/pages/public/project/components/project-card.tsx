@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useState, memo, useCallback, useMemo } from "react"
 import { motion } from "framer-motion"
 import type { ProjectType } from "@app/services/project-service"
 import { Badge } from "@app/components/ui/badge"
@@ -9,10 +9,23 @@ interface ProjectCardProps {
     index: number
 }
 
-const ProjectCard = ({ project, index }: ProjectCardProps) => {
+const ProjectCard = memo(function ProjectCard({ project, index }: ProjectCardProps) {
     const [isOpen, setIsOpen] = useState(false)
 
-    const delay = index * 0.1
+    const delay = useMemo(() => index * 0.1, [index])
+    
+    const handleOpen = useCallback(() => setIsOpen(true), [])
+    const handleClose = useCallback(() => setIsOpen(false), [])
+    
+    const displayedSkills = useMemo(
+        () => project.projectSkills?.slice(0, 3) ?? [],
+        [project.projectSkills]
+    )
+    
+    const remainingSkillsCount = useMemo(
+        () => (project.projectSkills?.length ?? 0) - displayedSkills.length,
+        [project.projectSkills, displayedSkills.length]
+    )
 
     return (
         <>
@@ -24,7 +37,7 @@ const ProjectCard = ({ project, index }: ProjectCardProps) => {
                 className="group"
             >
                 <div
-                    onClick={() => setIsOpen(true)}
+                    onClick={handleOpen}
                     className="
                         h-full overflow-hidden rounded-2xl bg-gradient-to-br from-slate-900/80 via-blue-950/80 to-slate-800/90 border
                         border-cyan-500/30 shadow-xl hover:shadow-cyan-500/30 group-hover:border-cyan-400 transition-all duration-300 cursor-pointer
@@ -36,6 +49,7 @@ const ProjectCard = ({ project, index }: ProjectCardProps) => {
                             <img
                                 src={(project.image as string) || "/placeholder.svg"}
                                 alt={`${project.name} preview`}
+                                loading="lazy"
                                 className="
                                     w-full h-full object-cover object-center transform 
                                     rounded-t-2xl
@@ -65,7 +79,7 @@ const ProjectCard = ({ project, index }: ProjectCardProps) => {
                         </p>
 
                         <div className="flex flex-wrap gap-2 mt-1">
-                            {project.projectSkills?.slice(0, 3).map((stack) => (
+                            {displayedSkills.map((stack) => (
                                 <Badge
                                     key={stack.skill?.id}
                                     variant="outline"
@@ -76,7 +90,7 @@ const ProjectCard = ({ project, index }: ProjectCardProps) => {
                                     {stack.skill?.name}
                                 </Badge>
                             ))}
-                            {project.projectSkills && project.projectSkills.length > 3 && (
+                            {remainingSkillsCount > 0 && (
                                 <Badge
                                     variant="outline"
                                     className="
@@ -84,7 +98,7 @@ const ProjectCard = ({ project, index }: ProjectCardProps) => {
                                         text-cyan-400 font-semibold px-3 py-1
                                     "
                                 >
-                                    +{project.projectSkills.length - 3}
+                                    +{remainingSkillsCount}
                                 </Badge>
                             )}
                         </div>
@@ -92,9 +106,9 @@ const ProjectCard = ({ project, index }: ProjectCardProps) => {
                 </div>
             </motion.div>
 
-            <ProjectModal project={project} isOpen={isOpen} onClose={() => setIsOpen(false)} />
+            <ProjectModal project={project} isOpen={isOpen} onClose={handleClose} />
         </>
     )
-}
+})
 
 export default ProjectCard

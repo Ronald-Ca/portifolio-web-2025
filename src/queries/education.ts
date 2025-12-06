@@ -1,30 +1,49 @@
 import { DefaultReturnType } from '../lib/base-service'
 import EducationService, { EducationType } from '../services/education-service'
-import { useMutation, useQuery } from '@tanstack/react-query'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { queryKeys } from './query-keys'
 
 const education = new EducationService()
 
-type PropsTypeObject = {
+type MutationOptions = {
 	onSuccess?: (data: DefaultReturnType<EducationType>) => void
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	onError?: (error: any) => void
+	onError?: (error: Error) => void
 }
 
 const useGetEducationQuery = () => {
-	return useQuery(['get-education'], () => education.getEducation())
-}
-
-const useCreateEducationMutation = (options: PropsTypeObject) => {
-	return useMutation(async (data: EducationType) => await education.createEducation(data), {
-		onSuccess: options?.onSuccess,
-		onError: options?.onError,
+	return useQuery({
+		queryKey: queryKeys.education.list(),
+		queryFn: () => education.getEducation(),
 	})
 }
 
-const useUpdateEducationMutation = (options: PropsTypeObject) => {
-	return useMutation(async (data: EducationType) => await education.updateEducation(data), {
-		onSuccess: options?.onSuccess,
-		onError: options?.onError,
+const useCreateEducationMutation = (options?: MutationOptions) => {
+	const queryClient = useQueryClient()
+	
+	return useMutation({
+		mutationFn: async (data: EducationType) => await education.createEducation(data),
+		onSuccess: (data) => {
+			queryClient.invalidateQueries({ queryKey: queryKeys.education.all })
+			options?.onSuccess?.(data)
+		},
+		onError: (error) => {
+			options?.onError?.(error as Error)
+		},
+	})
+}
+
+const useUpdateEducationMutation = (options?: MutationOptions) => {
+	const queryClient = useQueryClient()
+	
+	return useMutation({
+		mutationFn: async (data: EducationType) => await education.updateEducation(data),
+		onSuccess: (data) => {
+			queryClient.invalidateQueries({ queryKey: queryKeys.education.all })
+			options?.onSuccess?.(data)
+		},
+		onError: (error) => {
+			options?.onError?.(error as Error)
+		},
 	})
 }
 

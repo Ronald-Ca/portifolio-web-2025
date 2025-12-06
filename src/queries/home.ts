@@ -1,30 +1,49 @@
 import { DefaultReturnType } from '../lib/base-service'
 import HomeService, { HomeType } from '../services/home-service'
-import { useMutation, useQuery } from '@tanstack/react-query'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { queryKeys } from './query-keys'
 
 const home = new HomeService()
 
-type PropsTypeObject = {
+type MutationOptions = {
 	onSuccess?: (data: DefaultReturnType<HomeType>) => void
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	onError?: (error: any) => void
+	onError?: (error: Error) => void
 }
 
 const useGetHomeQuery = () => {
-	return useQuery(['get-home'], () => home.getHome())
-}
-
-const useCreateHomeMutation = (options: PropsTypeObject) => {
-	return useMutation(async (data: HomeType) => await home.createHome(data), {
-		onSuccess: options?.onSuccess,
-		onError: options?.onError,
+	return useQuery({
+		queryKey: queryKeys.home.detail(),
+		queryFn: () => home.getHome(),
 	})
 }
 
-const useUpdateHomeMutation = (options: PropsTypeObject) => {
-	return useMutation(async (data: HomeType) => await home.updateHome(data), {
-		onSuccess: options?.onSuccess,
-		onError: options?.onError,
+const useCreateHomeMutation = (options?: MutationOptions) => {
+	const queryClient = useQueryClient()
+	
+	return useMutation({
+		mutationFn: async (data: HomeType) => await home.createHome(data),
+		onSuccess: (data) => {
+			queryClient.invalidateQueries({ queryKey: queryKeys.home.all })
+			options?.onSuccess?.(data)
+		},
+		onError: (error) => {
+			options?.onError?.(error as Error)
+		},
+	})
+}
+
+const useUpdateHomeMutation = (options?: MutationOptions) => {
+	const queryClient = useQueryClient()
+	
+	return useMutation({
+		mutationFn: async (data: HomeType) => await home.updateHome(data),
+		onSuccess: (data) => {
+			queryClient.invalidateQueries({ queryKey: queryKeys.home.all })
+			options?.onSuccess?.(data)
+		},
+		onError: (error) => {
+			options?.onError?.(error as Error)
+		},
 	})
 }
 

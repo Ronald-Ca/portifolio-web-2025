@@ -76,6 +76,7 @@ export default function ProjectModal({ project, isOpen, onClose }: ProjectModalP
                                             <img
                                                 src={(project.image as string) || "/placeholder.svg"}
                                                 alt={project.name}
+                                                loading="lazy"
                                                 className="w-full h-full object-cover rounded-t-2xl" />
                                         )}
                                         <div className="

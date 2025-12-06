@@ -1,3 +1,4 @@
+import { memo } from "react"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@radix-ui/react-tooltip"
 import type { IconType } from "react-icons"
 import { motion } from "framer-motion"
@@ -7,7 +8,7 @@ interface TechIconProps {
     Icon: IconType
 }
 
-export function TechIcon({ label, Icon }: TechIconProps) {
+export const TechIcon = memo(function TechIcon({ label, Icon }: TechIconProps) {
     return (
         <Tooltip>
             <TooltipTrigger asChild>
@@ -59,4 +60,4 @@ export function TechIcon({ label, Icon }: TechIconProps) {
             </TooltipContent>
         </Tooltip>
     )
-}
+})

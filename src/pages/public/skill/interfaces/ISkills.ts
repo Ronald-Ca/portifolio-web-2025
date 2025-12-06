@@ -1,4 +1,5 @@
 import { ReactElement } from "react"
+import type { Variants } from "framer-motion"
 
 export interface LoadedSkill {
     name: string
@@ -10,7 +11,7 @@ export interface LoadedSkill {
 export interface SkillsListProps {
     skills: LoadedSkill[]
     filter: "skill" | "competence"
-    variants: { container: any; item: any }
+    variants: { container: Variants; item: Variants }
 }
 
 export interface SkillCardProps {
@@ -20,5 +21,5 @@ export interface SkillCardProps {
         icon: ReactElement
         type: 'skill' | 'competence'
     }
-    variants: { item: any }
+    variants: { item: Variants }
 }

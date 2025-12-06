@@ -1,30 +1,49 @@
 import { DefaultReturnType } from '../lib/base-service'
 import CurriculumService, { CurriculumType } from '../services/curriculum-service'
-import { useMutation, useQuery } from '@tanstack/react-query'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { queryKeys } from './query-keys'
 
-const about = new CurriculumService()
+const curriculum = new CurriculumService()
 
-type PropsTypeObject = {
+type MutationOptions = {
 	onSuccess?: (data: DefaultReturnType<CurriculumType>) => void
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	onError?: (error: any) => void
+	onError?: (error: Error) => void
 }
 
 const useGetCurriculumQuery = () => {
-	return useQuery(['get-curriculum'], () => about.getCurriculum())
-}
-
-const useCreateCurriculumMutation = (options: PropsTypeObject) => {
-	return useMutation(async (data: CurriculumType) => await about.createCurriculum(data), {
-		onSuccess: options?.onSuccess,
-		onError: options?.onError,
+	return useQuery({
+		queryKey: queryKeys.curriculum.detail(),
+		queryFn: () => curriculum.getCurriculum(),
 	})
 }
 
-const useUpdateCurriculumMutation = (options: PropsTypeObject) => {
-	return useMutation(async (data: CurriculumType) => await about.updateCurriculum(data), {
-		onSuccess: options?.onSuccess,
-		onError: options?.onError,
+const useCreateCurriculumMutation = (options?: MutationOptions) => {
+	const queryClient = useQueryClient()
+	
+	return useMutation({
+		mutationFn: async (data: CurriculumType) => await curriculum.createCurriculum(data),
+		onSuccess: (data) => {
+			queryClient.invalidateQueries({ queryKey: queryKeys.curriculum.all })
+			options?.onSuccess?.(data)
+		},
+		onError: (error) => {
+			options?.onError?.(error as Error)
+		},
+	})
+}
+
+const useUpdateCurriculumMutation = (options?: MutationOptions) => {
+	const queryClient = useQueryClient()
+	
+	return useMutation({
+		mutationFn: async (data: CurriculumType) => await curriculum.updateCurriculum(data),
+		onSuccess: (data) => {
+			queryClient.invalidateQueries({ queryKey: queryKeys.curriculum.all })
+			options?.onSuccess?.(data)
+		},
+		onError: (error) => {
+			options?.onError?.(error as Error)
+		},
 	})
 }
 

@@ -1,3 +1,4 @@
+import { useMemo, useCallback } from "react"
 import { IoIosArrowDroprightCircle } from "react-icons/io"
 import { useNavigate } from "react-router-dom"
 import { Button } from "../../../components/ui/button"
@@ -18,10 +19,18 @@ export default function Home() {
 	const { data: home, isLoading, isError } = useGetHomeQuery()
 	const { data: socialMedia, isLoading: isLoadingSocialMedia } = useGetSocialMediaQuery()
 
+	const handleContactClick = useCallback(() => navigate("/contact"), [navigate])
+	const handleProjectsClick = useCallback(() => navigate("/projects"), [navigate])
+
+	const backgroundImageStyle = useMemo(
+		() => ({ backgroundImage: `url(${home?.imageBackground})` }),
+		[home?.imageBackground]
+	)
+
 	if (isLoading) return <LoadingSpinner />
 	if (isError || !home) return <ErrorComponent />
 
-	const { title, role, description, image, imageBackground } = home
+	const { title, role, description, image } = home
 
 	return (
 		<div
@@ -30,7 +39,7 @@ export default function Home() {
 				bg-cover bg-center flex items-center justify-center
 				md:px-4 bg-slate-900
 			"
-			style={{ backgroundImage: `url(${imageBackground})` }}
+			style={backgroundImageStyle}
 		>
 			<div className="absolute inset-0 opacity-60 bg-bg_default" />
 
@@ -59,7 +68,7 @@ export default function Home() {
 
 					<div className="flex flex-wrap gap-4 mb-8">
 						<Button
-							onClick={() => navigate("/contact")}
+							onClick={handleContactClick}
 							className="
 								px-6 h-12 flex items-center justify-center gap-3
 								bg-default hover:bg-default/90 text-white border border-default
@@ -71,7 +80,7 @@ export default function Home() {
 						</Button>
 
 						<Button
-							onClick={() => navigate("/projects")}
+							onClick={handleProjectsClick}
 							className="
 								px-6 h-12 flex items-center justify-center gap-3
 								border border-gray-600 hover:text-white hover:bg-bg_component

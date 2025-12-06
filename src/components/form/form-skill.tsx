@@ -12,19 +12,11 @@ import { useEffect } from 'react'
 import { Slider } from '@radix-ui/react-slider'
 import { IconPicker } from '../common/icon-picker/IconPicker'
 import { SegmentedProgress } from '../ui/segmented-progress'
-
-interface Skill {
-	name: string
-	level: number
-	icon: string
-	experience: number
-	color: string
-	type: "skill" | "competence"
-}
+import { SkillType } from '@app/services/skill-service'
 
 interface SkillFormProps {
-	selectedSkill: any | null
-	handleSave: (skill: Skill) => void
+	selectedSkill: SkillType | null
+	handleSave: (skill: SkillType) => void
 	isSubmitting?: boolean
 }
 

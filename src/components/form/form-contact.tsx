@@ -41,8 +41,9 @@ export default function FormContact() {
                 type: "success"
             });
             form.reset();
-        } catch (err: any) {
-            if (err.response?.status === 429) {
+        } catch (err) {
+            const axiosError = err as { response?: { status?: number } }
+            if (axiosError.response?.status === 429) {
                 setAlert({
                     title: "Limite atingido",
                     message: "Você atingiu o limite de mensagens. Tente novamente mais tarde.",

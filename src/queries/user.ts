@@ -4,16 +4,20 @@ import { useMutation } from '@tanstack/react-query'
 
 const user = new UserService()
 
-type PropsTypeObject = {
+type MutationOptions = {
 	onSuccess?: (data: DefaultReturnType<UserLoginResponseType>) => void
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	onError?: (error: any) => void
+	onError?: (error: Error) => void
 }
 
-const useAuthenticateMutation = (options: PropsTypeObject) => {
-	return useMutation(async (data: UserLoginType) => await user.authenticate(data), {
-		onSuccess: options?.onSuccess,
-		onError: options?.onError,
+const useAuthenticateMutation = (options?: MutationOptions) => {
+	return useMutation({
+		mutationFn: async (data: UserLoginType) => await user.authenticate(data),
+		onSuccess: (data) => {
+			options?.onSuccess?.(data)
+		},
+		onError: (error) => {
+			options?.onError?.(error as Error)
+		},
 	})
 }
 

@@ -64,7 +64,7 @@ export function FormExperience({ selectedExperience, handleSave, isSubmitting = 
 		setSelectedSkills(defaultValues.experienceSkill || [])
 	}, [selectedExperience, reset])
 
-	const onSubmit = (data: any) => {
+	const onSubmit = (data: Record<string, unknown>) => {
 		const newExperience: ExperienceType = {
 			...data,
 			yearInitial: Number.parseInt(data.yearInitial),
@@ -86,7 +86,7 @@ export function FormExperience({ selectedExperience, handleSave, isSubmitting = 
 	const handleToggle = () => setIsOpen((prev) => !prev)
 	const handleClose = () => setIsOpen(false)
 
-	const handleSkillChange = (skillId: string, checked: boolean, field: any) => {
+	const handleSkillChange = (skillId: string, checked: boolean, field: { value?: string[] }) => {
 		const newValue = checked
 			? [...(field.value ?? []), skillId]
 			: (field.value ?? []).filter((id: string) => id !== skillId)
