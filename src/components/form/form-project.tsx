@@ -55,9 +55,14 @@ export function FormProject({ selectedProject, handleSave, isSubmitting }: Proje
 		inputRef?.current?.click()
 	}
 
-	const onSubmit = (data: ProjectType) => {
+	const onSubmit = (data: { name: string; image: string | File; video: string | File; description: string; link: string; skillsId: (string | undefined)[] }) => {
 		const newProject: ProjectType = {
-			...data,
+			id: selectedProject?.id,
+			name: data.name,
+			image: data.image,
+			video: data.video,
+			description: data.description,
+			link: data.link,
 			projectSkills: skillsId.map((id) => ({ id })),
 		}
 		handleSave(newProject)

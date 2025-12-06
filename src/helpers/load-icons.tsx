@@ -1,76 +1,81 @@
 import { ReactElement } from 'react'
-import * as faIcons from 'react-icons/fa'
-import * as ioIcons from 'react-icons/io5'
-import * as siIcons from 'react-icons/si'
-import * as diIcons from 'react-icons/di'
-import * as bsIcons from 'react-icons/bs'
-import * as riIcons from 'react-icons/ri'
-import * as mdIcons from 'react-icons/md'
-import * as aiIcons from 'react-icons/ai'
-import * as biIcons from 'react-icons/bi'
-import * as ciIcons from 'react-icons/ci'
-import * as cgIcons from 'react-icons/cg'
-import * as fiIcons from 'react-icons/fi'
-import * as fcIcons from 'react-icons/fc'
-import * as fa6Icons from 'react-icons/fa6'
-import * as giIcons from 'react-icons/gi'
-import * as goIcons from 'react-icons/go'
-import * as grIcons from 'react-icons/gr'
-import * as hiIcons from 'react-icons/hi'
-import * as hi2Icons from 'react-icons/hi2'
-import * as imIcons from 'react-icons/im'
-import * as liaIcons from 'react-icons/lia'
-import * as io5Icons from 'react-icons/io5'
-import * as luIcons from 'react-icons/lu'
-import * as piIcons from 'react-icons/pi'
-import * as rxIcons from 'react-icons/rx'
-import * as slIcons from 'react-icons/sl'
-import * as tbIcons from 'react-icons/tb'
-import * as tfiIcons from 'react-icons/tfi'
-import * as tiIcons from 'react-icons/ti'
-import * as vscIcons from 'react-icons/vsc'
-import * as wiIcons from 'react-icons/wi'
+import { IconType } from 'react-icons'
 
-const iconSets = {
-	...faIcons,
-	...ioIcons,
-	...siIcons,
-	...diIcons,
-	...bsIcons,
-	...riIcons,
-	...mdIcons,
-	...aiIcons,
-	...biIcons,
-	...ciIcons,
-	...cgIcons,
-	...fiIcons,
-	...fcIcons,
-	...fa6Icons,
-	...giIcons,
-	...goIcons,
-	...grIcons,
-	...hiIcons,
-	...hi2Icons,
-	...imIcons,
-	...liaIcons,
-	...io5Icons,
-	...luIcons,
-	...piIcons,
-	...rxIcons,
-	...slIcons,
-	...tbIcons,
-	...tfiIcons,
-	...tiIcons,
-	...vscIcons,
-	...wiIcons,
+type IconModule = Record<string, IconType>
+
+const iconLoaders: Record<string, () => Promise<IconModule>> = {
+	Fa: () => import('react-icons/fa').then((m) => m as unknown as IconModule),
+	Io: () => import('react-icons/io5').then((m) => m as unknown as IconModule),
+	Si: () => import('react-icons/si').then((m) => m as unknown as IconModule),
+	Di: () => import('react-icons/di').then((m) => m as unknown as IconModule),
+	Bs: () => import('react-icons/bs').then((m) => m as unknown as IconModule),
+	Ri: () => import('react-icons/ri').then((m) => m as unknown as IconModule),
+	Md: () => import('react-icons/md').then((m) => m as unknown as IconModule),
+	Ai: () => import('react-icons/ai').then((m) => m as unknown as IconModule),
+	Bi: () => import('react-icons/bi').then((m) => m as unknown as IconModule),
+	Ci: () => import('react-icons/ci').then((m) => m as unknown as IconModule),
+	Cg: () => import('react-icons/cg').then((m) => m as unknown as IconModule),
+	Fi: () => import('react-icons/fi').then((m) => m as unknown as IconModule),
+	Fc: () => import('react-icons/fc').then((m) => m as unknown as IconModule),
+	Gi: () => import('react-icons/gi').then((m) => m as unknown as IconModule),
+	Go: () => import('react-icons/go').then((m) => m as unknown as IconModule),
+	Gr: () => import('react-icons/gr').then((m) => m as unknown as IconModule),
+	Hi: () => import('react-icons/hi').then((m) => m as unknown as IconModule),
+	Im: () => import('react-icons/im').then((m) => m as unknown as IconModule),
+	Lu: () => import('react-icons/lu').then((m) => m as unknown as IconModule),
+	Pi: () => import('react-icons/pi').then((m) => m as unknown as IconModule),
+	Rx: () => import('react-icons/rx').then((m) => m as unknown as IconModule),
+	Sl: () => import('react-icons/sl').then((m) => m as unknown as IconModule),
+	Tb: () => import('react-icons/tb').then((m) => m as unknown as IconModule),
+	Ti: () => import('react-icons/ti').then((m) => m as unknown as IconModule),
+	Vsc: () => import('react-icons/vsc').then((m) => m as unknown as IconModule),
+	Wi: () => import('react-icons/wi').then((m) => m as unknown as IconModule),
+	Lia: () => import('react-icons/lia').then((m) => m as unknown as IconModule),
+	Tfi: () => import('react-icons/tfi').then((m) => m as unknown as IconModule),
+	Hi2: () => import('react-icons/hi2').then((m) => m as unknown as IconModule),
+	Fa6: () => import('react-icons/fa6').then((m) => m as unknown as IconModule),
 }
 
+function getIconPrefix(iconName: string): string {
+	// Handle 3-character prefixes first
+	const threeCharPrefixes = ['Lia', 'Tfi', 'Hi2', 'Fa6', 'Vsc']
+	for (const prefix of threeCharPrefixes) {
+		if (iconName.startsWith(prefix)) {
+			return prefix
+		}
+	}
+	// Then 2-character prefixes
+	return iconName.slice(0, 2)
+}
+
+const iconCache = new Map<string, IconType>()
+
 export async function loadIcons(iconName: string, color: string): Promise<ReactElement> {
-	const Icon = iconSets[iconName as keyof typeof iconSets]
+	// Check cache first
+	let Icon = iconCache.get(iconName)
 
 	if (!Icon) {
-		throw new Error(`Icon ${iconName} not found`)
+		const prefix = getIconPrefix(iconName)
+		const loader = iconLoaders[prefix]
+
+		if (!loader) {
+			throw new Error(`Icon prefix ${prefix} not found for icon ${iconName}`)
+		}
+
+		const module = await loader()
+		Icon = module[iconName]
+
+		if (!Icon) {
+			throw new Error(`Icon ${iconName} not found`)
+		}
+
+		iconCache.set(iconName, Icon)
 	}
 
 	return <Icon size={60} style={{ color }} />
+}
+
+// Synchronous version for when you already have the icon loaded
+export function renderIcon(Icon: IconType, color: string, size = 60): ReactElement {
+	return <Icon size={size} style={{ color }} />
 }

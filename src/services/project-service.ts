@@ -54,11 +54,11 @@ export type ProjectType = {
 	projectSkills: ProjectSkillType[]
 }
 
-type ProjectSkillType = {
+export type ProjectSkillType = {
 	id: string
-	projectId: string
-	skillId: string
-	skill: SkillType
+	projectId?: string
+	skillId?: string
+	skill?: SkillType
 }
 
 export type SkillType = {
