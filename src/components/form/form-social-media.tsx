@@ -4,7 +4,7 @@ import { FormControl, FormField, FormItem, FormLabel, FormMessage } from '../ui/
 import { Input } from '../ui/input'
 import { Button } from '../ui/button'
 import { FaPalette, FaSave, FaSpinner } from 'react-icons/fa'
-import { IconPicker } from '../common/icon-picker/IconPicker'
+import { LazyIconPicker } from '../common/icon-picker/LazyIconPicker'
 import { IoMdColorPalette } from 'react-icons/io'
 import { Separator } from '@radix-ui/react-separator'
 import { useState } from 'react'
@@ -112,8 +112,8 @@ export default function FormSocialMedia({ selectedMedia, handleSave, isSubmittin
 								<FormLabel className="text-gray-300 flex items-center gap-2">Ícone</FormLabel>
 								<FormControl>
 									<div>
-										<IconPicker
-											onSelect={(iconName) => field.onChange(iconName)}
+										<LazyIconPicker
+											onSelect={(iconName: string) => field.onChange(iconName)}
 											size={28}
 											color={color || '#0ea5e9'}
 										/>

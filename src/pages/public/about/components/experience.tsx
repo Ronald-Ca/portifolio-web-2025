@@ -24,7 +24,7 @@ export const Experience: React.FC<ExperienceProps> = ({ experiences }) => (
                 {experience.company}
               </h3>
               <div className="text-cyan-400 font-medium mt-2 md:mt-0">
-                {experience.mothInitial}/{experience.yearInitial} - {experience.mothFinal}/{experience.yearFinal}
+                {experience.mothInitial}/{experience.yearInitial} - {experience.mothFinal === "Present" || !experience.yearFinal ? "Atual" : `${experience.mothFinal}/${experience.yearFinal}`}
               </div>
             </div>
             <div className="mb-4 text-xl font-semibold text-gray-300">{experience.role}</div>

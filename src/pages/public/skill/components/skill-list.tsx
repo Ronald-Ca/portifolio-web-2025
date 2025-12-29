@@ -18,7 +18,7 @@ export default function SkillsList({ skills, filter, variants }: SkillsListProps
                     <SkillCard
                         key={i}
                         skill={s}
-                        variants={variants.item}
+                        variants={{ item: variants.item }}
                     />
                 )
             ) : (

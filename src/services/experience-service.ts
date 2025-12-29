@@ -29,7 +29,7 @@ export type ExperienceType = {
 	role: string
 	yearInitial: number
 	mothInitial: string
-	yearFinal: number
+	yearFinal?: number
 	mothFinal: string
 	activities: string[]
 	experienceSkill: ExperienceSkillType[]

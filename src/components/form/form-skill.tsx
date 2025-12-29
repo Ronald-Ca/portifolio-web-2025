@@ -10,7 +10,7 @@ import { Separator } from '@radix-ui/react-separator'
 import { TbCategory } from 'react-icons/tb'
 import { useEffect } from 'react'
 import { Slider } from '@radix-ui/react-slider'
-import { IconPicker } from '../common/icon-picker/IconPicker'
+import { LazyIconPicker } from '../common/icon-picker/LazyIconPicker'
 import { SegmentedProgress } from '../ui/segmented-progress'
 import { SkillType } from '@app/services/skill-service'
 
@@ -38,7 +38,7 @@ const colorPalette = [
 
 export default function FormSkill({ selectedSkill, handleSave, isSubmitting = false }: SkillFormProps) {
 
-	const form = useForm<Skill>({
+	const form = useForm<SkillType>({
 		defaultValues: {
 			name: "",
 			level: 1,
@@ -74,7 +74,7 @@ export default function FormSkill({ selectedSkill, handleSave, isSubmitting = fa
 		}
 	}, [selectedSkill, form])
 
-	const onSubmit = (data: Skill) => {
+	const onSubmit = (data: SkillType) => {
 		handleSave(data)
 	}
 
@@ -229,7 +229,7 @@ export default function FormSkill({ selectedSkill, handleSave, isSubmitting = fa
 								</FormLabel>
 								<FormControl>
 									<div>
-										<IconPicker
+										<LazyIconPicker
 											onSelect={(iconName) => field.onChange(iconName)}
 											size={28}
 											color={form.watch('color') || '#0ea5e9'}

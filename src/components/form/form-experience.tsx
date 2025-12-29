@@ -65,15 +65,21 @@ export function FormExperience({ selectedExperience, handleSave, isSubmitting = 
 	}, [selectedExperience, reset])
 
 	const onSubmit = (data: Record<string, unknown>) => {
-		const newExperience: ExperienceType = {
-			...data,
-			yearInitial: Number.parseInt(data.yearInitial),
-			yearFinal: data.yearFinal ? Number.parseInt(data.yearFinal) : undefined,
-			activities: data.activities
+		const experienceSkillIds = Array.isArray(data.experienceSkill) ? data.experienceSkill as string[] : []
+		const newExperience = {
+			company: String(data.company),
+			role: String(data.role),
+			yearInitial: Number.parseInt(String(data.yearInitial)),
+			mothInitial: String(data.mothInitial),
+			yearFinal: data.yearFinal && String(data.yearFinal).trim() !== "" ? Number.parseInt(String(data.yearFinal)) : undefined,
+			mothFinal: String(data.mothFinal),
+			activities: String(data.activities)
 				.split(";")
 				.map((item: string) => item.trim())
 				.filter((item: string) => item),
-		}
+			experienceSkill: experienceSkillIds as any,
+			...(selectedExperience?.id ? { id: selectedExperience.id } : {})
+		} as ExperienceType
 		handleSave(newExperience)
 	}
 
@@ -86,7 +92,7 @@ export function FormExperience({ selectedExperience, handleSave, isSubmitting = 
 	const handleToggle = () => setIsOpen((prev) => !prev)
 	const handleClose = () => setIsOpen(false)
 
-	const handleSkillChange = (skillId: string, checked: boolean, field: { value?: string[] }) => {
+	const handleSkillChange = (skillId: string, checked: boolean, field: { value?: string[], onChange: (value: string[]) => void }) => {
 		const newValue = checked
 			? [...(field.value ?? []), skillId]
 			: (field.value ?? []).filter((id: string) => id !== skillId)
