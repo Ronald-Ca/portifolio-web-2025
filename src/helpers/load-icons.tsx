@@ -50,7 +50,7 @@ function getIconPrefix(iconName: string): string {
 
 const iconCache = new Map<string, IconType>()
 
-export async function loadIcons(iconName: string, color: string): Promise<ReactElement> {
+export async function loadIcons(iconName: string, color: string, size = 60): Promise<ReactElement> {
 	// Check cache first
 	let Icon = iconCache.get(iconName)
 
@@ -72,7 +72,7 @@ export async function loadIcons(iconName: string, color: string): Promise<ReactE
 		iconCache.set(iconName, Icon)
 	}
 
-	return <Icon size={60} style={{ color }} />
+	return <Icon size={size} style={{ color }} />
 }
 
 // Synchronous version for when you already have the icon loaded

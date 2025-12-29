@@ -50,6 +50,13 @@ export default class HomeService extends BaseService {
 	}
 }
 
+export type MainSkill = {
+	id: string
+	name: string
+	icon: string
+	color: string | null
+}
+
 export type HomeType = {
 	id?: string
 	image: File | null
@@ -58,4 +65,5 @@ export type HomeType = {
 	description: string
 	colorBackground?: string
 	imageBackground?: File | null
+	mainSkills?: MainSkill[]
 }
