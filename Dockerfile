@@ -4,6 +4,11 @@ COPY package*.json .
 COPY yarn*.lock .
 RUN yarn
 ENV NODE_OPTIONS=--max_old_space_size=3072
+
+# Build argument para variável de ambiente
+ARG VITE_API_URL
+ENV VITE_API_URL=$VITE_API_URL
+
 COPY . .
 RUN yarn build
 FROM nginx:latest
