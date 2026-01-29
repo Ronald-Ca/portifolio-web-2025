@@ -10,7 +10,7 @@ import { Separator } from '@radix-ui/react-separator'
 import { TbCategory } from 'react-icons/tb'
 import { useEffect } from 'react'
 import { Slider } from '@radix-ui/react-slider'
-import { LazyIconPicker } from '../common/icon-picker/LazyIconPicker'
+import { IconPicker } from '../common/icon-picker/IconPicker'
 import { SegmentedProgress } from '../ui/segmented-progress'
 import { SkillType } from '@app/services/skill-service'
 
@@ -229,7 +229,7 @@ export default function FormSkill({ selectedSkill, handleSave, isSubmitting = fa
 								</FormLabel>
 								<FormControl>
 									<div>
-										<LazyIconPicker
+										<IconPicker
 											onSelect={(iconName) => field.onChange(iconName)}
 											size={28}
 											color={form.watch('color') || '#0ea5e9'}
