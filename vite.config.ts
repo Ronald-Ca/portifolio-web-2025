@@ -13,13 +13,15 @@ export default defineConfig({
 		rollupOptions: {
 			output: {
 				manualChunks(id) {
-					// React core
-					if (id.includes('node_modules/react/') || id.includes('node_modules/react-dom/')) {
+					// React core + bibliotecas que dependem diretamente do React
+					// Agrupados para garantir ordem de carregamento correta
+					if (
+						id.includes('node_modules/react/') ||
+						id.includes('node_modules/react-dom/') ||
+						id.includes('@tanstack/react-query') ||
+						id.includes('node_modules/react-router')
+					) {
 						return 'vendor-react'
-					}
-					// React Router
-					if (id.includes('node_modules/react-router')) {
-						return 'vendor-router'
 					}
 					// Radix UI - split by component
 					if (id.includes('@radix-ui')) {
@@ -32,10 +34,6 @@ export default defineConfig({
 					// Lucide icons
 					if (id.includes('node_modules/lucide-react')) {
 						return 'vendor-lucide'
-					}
-					// React Query
-					if (id.includes('@tanstack/react-query')) {
-						return 'vendor-query'
 					}
 					// Form utilities
 					if (id.includes('react-hook-form') || id.includes('node_modules/zod') || id.includes('@hookform')) {
@@ -53,7 +51,7 @@ export default defineConfig({
 					if (id.includes('clsx') || id.includes('tailwind-merge') || id.includes('class-variance-authority')) {
 						return 'vendor-utils'
 					}
-					// React Icons - each library gets its own chunk
+					// React Icons - cada biblioteca em chunk separado
 					if (id.includes('react-icons/fa6')) return 'icons-fa6'
 					if (id.includes('react-icons/fa')) return 'icons-fa'
 					if (id.includes('react-icons/io5')) return 'icons-io5'
