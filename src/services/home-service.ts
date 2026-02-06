@@ -25,6 +25,10 @@ export default class HomeService extends BaseService {
 		if (data.imageBackground) {
 			formData.append('imageBackground', data.imageBackground)
 		}
+		const mainIds = Array.isArray(data.mainSkills)
+			? data.mainSkills.filter((s): s is string => typeof s === 'string')
+			: []
+		if (mainIds.length) formData.append('mainSkills', JSON.stringify(mainIds))
 
 		const response = await api.post('/home', formData, this.getToken())
 		return response.data
@@ -44,6 +48,10 @@ export default class HomeService extends BaseService {
 		if (data.imageBackground) {
 			formData.append('imageBackground', data.imageBackground)
 		}
+		const mainIds = Array.isArray(data.mainSkills)
+			? data.mainSkills.filter((s): s is string => typeof s === 'string')
+			: []
+		formData.append('mainSkills', JSON.stringify(mainIds))
 
 		const response = await api.put(`/home/${data.id}`, formData, this.getToken())
 		return response.data
@@ -65,5 +73,5 @@ export type HomeType = {
 	description: string
 	colorBackground?: string
 	imageBackground?: File | null
-	mainSkills?: MainSkill[]
+	mainSkills?: MainSkill[] | string[]
 }

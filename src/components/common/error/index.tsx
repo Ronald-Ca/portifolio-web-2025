@@ -4,8 +4,9 @@ export default function ErrorComponent() {
   return (
     <div
       className="
+        fixed inset-0
         flex flex-col items-center justify-center
-        w-full min-h-screen-header-footer
+        w-full min-h-screen
         bg-gradient-to-r from-slate-900 via-indigo-950 to-blue-950 animate-gradient-move
         px-4 py-12
       "

@@ -105,44 +105,6 @@ export default function FormSkill({ selectedSkill, handleSave, isSubmitting = fa
 							</FormItem>
 						)}
 					/>
-
-					<FormField
-						control={form.control}
-						name="type"
-						render={({ field }) => (
-							<FormItem>
-								<FormLabel className="text-gray-300 flex items-center gap-2">
-									<TbCategory className="text-cyan-500/70" size={14} />
-									Tipo
-								</FormLabel>
-								<div className="flex gap-4 mt-1">
-									<Button
-										type="button"
-										variant={field.value === "skill" ? "default" : "outline"}
-										className={`flex-1 ${field.value === "skill"
-											? "bg-gradient-to-r from-cyan-500 to-blue-600"
-											: "bg-[#070b14] border border-[#1e2a4a] text-gray-400"
-											}`}
-										onClick={() => setValue("type", "skill")}
-									>
-										Habilidade Técnica
-									</Button>
-									<Button
-										type="button"
-										variant={field.value === "competence" ? "default" : "outline"}
-										className={`flex-1 ${field.value === "competence"
-											? "bg-gradient-to-r from-purple-500 to-pink-600"
-											: "bg-[#070b14] border border-[#1e2a4a] text-gray-400"
-											}`}
-										onClick={() => setValue("type", "competence")}
-									>
-										Competência
-									</Button>
-								</div>
-								<FormMessage className="text-red-400" />
-							</FormItem>
-						)}
-					/>
 				</div>
 
 				<Separator className="bg-[#1e2a4a]" />
@@ -214,6 +176,52 @@ export default function FormSkill({ selectedSkill, handleSave, isSubmitting = fa
 
 				<div className="space-y-4">
 					<div className="flex items-center gap-2 mb-2">
+						<TbCategory className="text-cyan-500" size={16} />
+						<h3 className="text-gray-300 font-medium">Tipo</h3>
+					</div>
+					<FormField
+						control={form.control}
+						name="type"
+						render={({ field }) => (
+							<FormItem>
+								<FormLabel className="text-gray-300 flex items-center gap-2">
+									<TbCategory className="text-cyan-500/70" size={14} />
+									Tipo da habilidade
+								</FormLabel>
+								<div className="flex gap-4 mt-1">
+									<Button
+										type="button"
+										variant={field.value === "skill" ? "default" : "outline"}
+										className={`flex-1 ${field.value === "skill"
+											? "bg-gradient-to-r from-cyan-500 to-blue-600"
+											: "bg-[#070b14] border border-[#1e2a4a] text-gray-400"
+											}`}
+										onClick={() => setValue("type", "skill")}
+									>
+										Habilidade Técnica
+									</Button>
+									<Button
+										type="button"
+										variant={field.value === "competence" ? "default" : "outline"}
+										className={`flex-1 ${field.value === "competence"
+											? "bg-gradient-to-r from-purple-500 to-pink-600"
+											: "bg-[#070b14] border border-[#1e2a4a] text-gray-400"
+											}`}
+										onClick={() => setValue("type", "competence")}
+									>
+										Competência
+									</Button>
+								</div>
+								<FormMessage className="text-red-400" />
+							</FormItem>
+						)}
+					/>
+				</div>
+
+				<Separator className="bg-[#1e2a4a]" />
+
+				<div className="space-y-4">
+					<div className="flex items-center gap-2 mb-2">
 						<FaPalette className="text-cyan-500" size={16} />
 						<h3 className="text-gray-300 font-medium">Aparência</h3>
 					</div>
@@ -231,6 +239,8 @@ export default function FormSkill({ selectedSkill, handleSave, isSubmitting = fa
 									<div>
 										<IconPicker
 											onSelect={(iconName) => field.onChange(iconName)}
+											selectedIcon={field.value}
+											iconType={form.watch('type') === 'competence' ? 'competence' : 'skill'}
 											size={28}
 											color={form.watch('color') || '#0ea5e9'}
 										/>

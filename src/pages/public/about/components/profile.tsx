@@ -50,7 +50,7 @@ export const Profile: React.FC<ProfileProps> = ({ about, curriculum }) => (
           <Separator className="h-8 w-[1px] bg-slate-700" />
           <div className="flex items-center gap-3 text-lg">
             <FaBirthdayCake className="text-cyan-400" size={24} />
-            <span>{about.age} anos</span>
+            <span>{about.age != null ? `${about.age} anos` : (about.birthDate ? `${Math.floor((Date.now() - new Date(about.birthDate).getTime()) / (365.25 * 24 * 60 * 60 * 1000))} anos` : '')}</span>
           </div>
           <Separator className="h-8 w-[1px] bg-slate-700" />
           <div className="flex items-center gap-3 text-lg">

@@ -11,7 +11,7 @@ import { ConfigAboutSkeleton } from '@app/components/common/skeleton/config-abou
 interface About {
 	image: File | null
 	name: string
-	age: number
+	birthDate: string
 	city: string
 	state: string
 }
@@ -28,7 +28,7 @@ export default function ConfigAbout() {
 		defaultValues: {
 			image: null,
 			name: "",
-			age: 0,
+			birthDate: "",
 			city: "",
 			state: "",
 		},
@@ -83,15 +83,19 @@ export default function ConfigAbout() {
 				setImagePreview("")
 			}
 
+			const birthDateStr = about.birthDate
+				? String(about.birthDate).split("T")[0]
+				: ""
+
 			formMethods.reset({
 				image: null,
-				name: about.name,
-				age: about.age,
-				city: about.city,
-				state: about.state,
+				name: about.name ?? "",
+				birthDate: birthDateStr,
+				city: about.city ?? "",
+				state: about.state ?? "",
 			})
 		}
-	}, [isSuccess, about, formMethods])
+	}, [isSuccess, about?.id, about?.name, about?.birthDate, about?.city, about?.state, about?.image])
 
 	const isMutating = createAbout.isLoading || updateAbout.isLoading
 
@@ -99,7 +103,9 @@ export default function ConfigAbout() {
 
 	return (
 		<FormProvider {...formMethods}>
-			<div className="min-h-full flex flex-col items-center">
+			<div className="flex flex-col h-full min-h-0 overflow-hidden">
+			<div className="flex-1 min-h-0 overflow-y-auto overflow-x-hidden pr-1 scrollbar-thin scrollbar-track-transparent scrollbar-thumb-cyan-400/50 scrollbar-thumb-rounded-full">
+			<div className="min-h-full flex flex-col items-center py-4">
 				<div className="w-full max-w-2xl">
 					<h2 className="text-2xl font-bold text-cyan-400 mb-6 flex items-center gap-2">
 						<span className="bg-cyan-500/10 p-2 rounded-md">
@@ -160,13 +166,15 @@ export default function ConfigAbout() {
 
 								<div className="w-full">
 									<div className="bg-[#0c1220] rounded-lg p-5 border border-[#1e2a4a]">
-										<FormAbout onSubmit={onSubmit} isSubmitting={isMutating} />
+										<FormAbout onSubmit={onSubmit} isSubmitting={isMutating} initialCity={about?.city ?? ''} />
 									</div>
 								</div>
 							</div>
 						</CardContent>
 					</Card>
 				</div>
+			</div>
+			</div>
 			</div>
 		</FormProvider>
 	)

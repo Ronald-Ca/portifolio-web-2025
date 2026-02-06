@@ -74,8 +74,15 @@
     @apply border-border;
   }
 
+  html {
+    background-color: #070b14;
+    min-height: 100%;
+  }
+
   body {
-    @apply bg-background text-foreground;
+    @apply text-foreground;
+    background-color: #070b14;
+    min-height: 100%;
   }
 }
 

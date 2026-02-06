@@ -4,19 +4,29 @@ import { Separator } from '@radix-ui/react-select'
 import { Badge } from '@app/components/ui/badge'
 import React from 'react'
 import { ExperienceType } from '@app/services/experience-service'
+import { getModalityLabel } from '@app/utils/modality'
 
 interface ExperienceProps {
   experiences: ExperienceType[];
 }
 
-export const Experience: React.FC<ExperienceProps> = ({ experiences }) => (
+const sortByMostRecentFirst = (list: ExperienceType[]) =>
+  [...list].sort((a, b) => {
+    const yearA = a.currentJob ? 1e9 : (a.yearFinal ?? a.yearInitial ?? 0)
+    const yearB = b.currentJob ? 1e9 : (b.yearFinal ?? b.yearInitial ?? 0)
+    return yearB - yearA
+  })
+
+export const Experience: React.FC<ExperienceProps> = ({ experiences }) => {
+  const sorted = experiences?.length ? sortByMostRecentFirst(experiences) : []
+  return (
   <Card className="bg-slate-900/50 border-cyan-500/50 text-white">
     <CardHeader>
       <h2 className="text-3xl font-bold text-center text-cyan-400">Experiências Profissionais</h2>
     </CardHeader>
     <CardContent>
       <div className="grid grid-cols-1 gap-8">
-        {experiences?.map((experience, index) => (
+        {sorted.map((experience, index) => (
           <div key={index} className="bg-slate-800/50 rounded-xl p-6">
             <div className="flex flex-col md:flex-row md:items-center justify-between mb-4">
               <h3 className="text-2xl font-bold text-white flex items-center">
@@ -28,6 +38,16 @@ export const Experience: React.FC<ExperienceProps> = ({ experiences }) => (
               </div>
             </div>
             <div className="mb-4 text-xl font-semibold text-gray-300">{experience.role}</div>
+            {experience.modality && (
+              <div className="mb-2">
+                <Badge variant="outline" className="bg-cyan-500/10 text-cyan-400 border-cyan-500/30">
+                  {getModalityLabel(experience.modality)}
+                </Badge>
+              </div>
+            )}
+            {experience.description && (
+              <p className="mb-4 text-gray-300">{experience.description}</p>
+            )}
             <Separator className="my-4 bg-slate-700" />
             <div className="mb-6">
               <h4 className="text-lg font-semibold text-cyan-400 mb-3">Atividades:</h4>
@@ -55,4 +75,5 @@ export const Experience: React.FC<ExperienceProps> = ({ experiences }) => (
       </div>
     </CardContent>
   </Card>
-)
+  )
+}

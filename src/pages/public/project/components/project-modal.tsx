@@ -17,39 +17,40 @@ export default function ProjectModal({ project, isOpen, onClose }: ProjectModalP
         <AnimatePresence>
             {isOpen && (
                 <Dialog.Root open onOpenChange={onClose}>
-                    <Dialog.Portal >
+                    <Dialog.Portal>
                         <Dialog.Overlay asChild>
                             <motion.div
                                 initial={{ opacity: 0 }}
                                 animate={{ opacity: 1 }}
                                 exit={{ opacity: 0 }}
                                 transition={{ duration: 0.2 }}
-                                className="fixed inset-0 bg-black/60 backdrop-blur-sm"
+                                onClick={onClose}
+                                className="fixed inset-0 z-[100] bg-black/60 backdrop-blur-sm cursor-default"
                             />
                         </Dialog.Overlay>
 
-                        <Dialog.Content asChild>
-                            <motion.div
-                                initial={{ y: -20, opacity: 0 }}
-                                animate={{ y: 0, opacity: 1 }}
-                                exit={{ y: -20, opacity: 0 }}
-                                transition={{ duration: 0.3 }}
-                                className="
-                                    fixed inset-0 
-                                    max-w-3xl max-h-[85vh] 
-                                    m-auto mt-28 
-                                    bg-gradient-to-r 
-                                    from-slate-900  to-blue-950 
-                                    animate-gradient-move
-                                    rounded-2xl
-                                    overflow-y-auto
-                                    shadow-2xl border border-cyan-700/40
-                                    scrollbar-thin
-                                    scrollbar-track-transparent scrollbar-track-rounded-lg
-                                    scrollbar-thumb-default scrollbar-thumb-rounded-lg
-                                    hover:scrollbar-thumb-default
-                                "
-                            >
+                        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 pointer-events-none">
+                            <Dialog.Content asChild>
+                                <motion.div
+                                    initial={{ y: -20, opacity: 0 }}
+                                    animate={{ y: 0, opacity: 1 }}
+                                    exit={{ y: -20, opacity: 0 }}
+                                    transition={{ duration: 0.3 }}
+                                    className="
+                                        pointer-events-auto
+                                        w-full max-w-3xl max-h-[min(85vh,calc(100vh-3rem))]
+                                        bg-gradient-to-r 
+                                        from-slate-900 to-blue-950 
+                                        animate-gradient-move
+                                        rounded-2xl
+                                        overflow-y-auto
+                                        shadow-2xl border border-cyan-700/40
+                                        scrollbar-thin
+                                        scrollbar-track-transparent scrollbar-track-rounded-lg
+                                        scrollbar-thumb-default scrollbar-thumb-rounded-lg
+                                        hover:scrollbar-thumb-default
+                                    "
+                                >
                                 <div className="relative">
                                     <Dialog.Close asChild>
                                         <Button
@@ -144,8 +145,9 @@ export default function ProjectModal({ project, isOpen, onClose }: ProjectModalP
                                         </div>
                                     )}
                                 </div>
-                            </motion.div>
-                        </Dialog.Content>
+                                </motion.div>
+                            </Dialog.Content>
+                        </div>
                     </Dialog.Portal>
                 </Dialog.Root>
             )}

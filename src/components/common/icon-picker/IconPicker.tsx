@@ -1,6 +1,22 @@
-import React, { useState, useMemo } from 'react'
+import React, { Component, useState, useMemo } from 'react'
 import { Icon } from '@iconify/react'
 import { toIconifyName } from '@app/helpers/icon-utils'
+
+const FALLBACK_ICON = 'mdi:code-tags'
+
+class IconCellErrorBoundary extends Component<
+	{ children: React.ReactNode; fallback: React.ReactNode },
+	{ hasError: boolean }
+> {
+	state = { hasError: false }
+	static getDerivedStateFromError() {
+		return { hasError: true }
+	}
+	render() {
+		if (this.state.hasError) return this.props.fallback
+		return this.props.children
+	}
+}
 
 // Icones mais usados para portfolio (curados)
 const popularIcons = [
@@ -8,7 +24,7 @@ const popularIcons = [
 	{ name: 'SiTypescript', iconify: 'simple-icons:typescript' },
 	{ name: 'SiJavascript', iconify: 'simple-icons:javascript' },
 	{ name: 'SiPython', iconify: 'simple-icons:python' },
-	{ name: 'FaJava', iconify: 'fa:java' },
+	{ name: 'FaJava', iconify: 'fa-brands:java' },
 	{ name: 'SiCplusplus', iconify: 'simple-icons:cplusplus' },
 	{ name: 'SiRust', iconify: 'simple-icons:rust' },
 	{ name: 'SiGo', iconify: 'simple-icons:go' },
@@ -20,23 +36,24 @@ const popularIcons = [
 	{ name: 'SiCsharp', iconify: 'simple-icons:csharp' },
 
 	// Frontend
-	{ name: 'FaReact', iconify: 'fa:react' },
-	{ name: 'FaVuejs', iconify: 'fa:vuejs' },
-	{ name: 'FaAngular', iconify: 'fa:angular' },
+	{ name: 'FaReact', iconify: 'simple-icons:react' },
+	{ name: 'FaVuejs', iconify: 'simple-icons:vuedotjs' },
+	{ name: 'FaAngular', iconify: 'simple-icons:angular' },
 	{ name: 'SiNextdotjs', iconify: 'simple-icons:nextdotjs' },
 	{ name: 'SiSvelte', iconify: 'simple-icons:svelte' },
 	{ name: 'SiTailwindcss', iconify: 'simple-icons:tailwindcss' },
-	{ name: 'FaHtml5', iconify: 'fa:html5' },
-	{ name: 'FaCss3Alt', iconify: 'fa:css3-alt' },
+	{ name: 'FaHtml5', iconify: 'simple-icons:html5' },
+	{ name: 'FaCss3Alt', iconify: 'simple-icons:css3' },
 	{ name: 'SiSass', iconify: 'simple-icons:sass' },
 	{ name: 'SiBootstrap', iconify: 'simple-icons:bootstrap' },
 	{ name: 'SiMui', iconify: 'simple-icons:mui' },
+	{ name: 'SiRadixui', iconify: 'simple-icons:radixui' },
 	{ name: 'SiStyledcomponents', iconify: 'simple-icons:styledcomponents' },
 	{ name: 'SiFlutter', iconify: 'simple-icons:flutter' },
 	{ name: 'SiReactnative', iconify: 'simple-icons:react' },
 
 	// Backend
-	{ name: 'FaNodeJs', iconify: 'fa:node-js' },
+	{ name: 'FaNodeJs', iconify: 'simple-icons:nodedotjs' },
 	{ name: 'SiExpress', iconify: 'simple-icons:express' },
 	{ name: 'SiNestjs', iconify: 'simple-icons:nestjs' },
 	{ name: 'SiDjango', iconify: 'simple-icons:django' },
@@ -61,9 +78,9 @@ const popularIcons = [
 	{ name: 'SiCassandra', iconify: 'simple-icons:apachecassandra' },
 
 	// DevOps/Cloud
-	{ name: 'FaDocker', iconify: 'fa:docker' },
+	{ name: 'FaDocker', iconify: 'simple-icons:docker' },
 	{ name: 'SiKubernetes', iconify: 'simple-icons:kubernetes' },
-	{ name: 'FaAws', iconify: 'fa:aws' },
+	{ name: 'FaAws', iconify: 'simple-icons:amazonaws' },
 	{ name: 'SiGooglecloud', iconify: 'simple-icons:googlecloud' },
 	{ name: 'SiMicrosoftazure', iconify: 'simple-icons:microsoftazure' },
 	{ name: 'SiVercel', iconify: 'simple-icons:vercel' },
@@ -79,8 +96,8 @@ const popularIcons = [
 	{ name: 'SiApache', iconify: 'simple-icons:apache' },
 
 	// Ferramentas
-	{ name: 'FaGithub', iconify: 'fa:github' },
-	{ name: 'FaGitAlt', iconify: 'fa:git-alt' },
+	{ name: 'FaGithub', iconify: 'simple-icons:github' },
+	{ name: 'FaGitAlt', iconify: 'simple-icons:git' },
 	{ name: 'SiGitlab', iconify: 'simple-icons:gitlab' },
 	{ name: 'SiBitbucket', iconify: 'simple-icons:bitbucket' },
 	{ name: 'SiVscode', iconify: 'simple-icons:visualstudiocode' },
@@ -99,6 +116,7 @@ const popularIcons = [
 	// Outros
 	{ name: 'SiGraphql', iconify: 'simple-icons:graphql' },
 	{ name: 'SiPrisma', iconify: 'simple-icons:prisma' },
+	{ name: 'SiDrizzle', iconify: 'simple-icons:drizzle' },
 	{ name: 'SiFirebase', iconify: 'simple-icons:firebase' },
 	{ name: 'SiSupabase', iconify: 'simple-icons:supabase' },
 	{ name: 'SiStripe', iconify: 'simple-icons:stripe' },
@@ -107,8 +125,10 @@ const popularIcons = [
 	{ name: 'SiWebpack', iconify: 'simple-icons:webpack' },
 	{ name: 'SiVite', iconify: 'simple-icons:vite' },
 	{ name: 'SiEslint', iconify: 'simple-icons:eslint' },
+	{ name: 'SiBiome', iconify: 'simple-icons:biome' },
 	{ name: 'SiPrettier', iconify: 'simple-icons:prettier' },
 	{ name: 'SiJest', iconify: 'simple-icons:jest' },
+	{ name: 'SiVitest', iconify: 'simple-icons:vitest' },
 	{ name: 'SiCypress', iconify: 'simple-icons:cypress' },
 	{ name: 'SiTestinglibrary', iconify: 'simple-icons:testinglibrary' },
 	{ name: 'SiStorybook', iconify: 'simple-icons:storybook' },
@@ -119,20 +139,57 @@ const popularIcons = [
 	{ name: 'RiJavascriptLine', iconify: 'ri:javascript-line' },
 ]
 
+const competenceIcons = [
+	{ name: 'MdAccountGroup', iconify: 'mdi:account-group' },
+	{ name: 'MdMessage', iconify: 'mdi:message-text' },
+	{ name: 'MdLeaderboard', iconify: 'mdi:podium' },
+	{ name: 'MdLightbulb', iconify: 'mdi:lightbulb-on' },
+	{ name: 'MdPsychology', iconify: 'mdi:psychology' },
+	{ name: 'MdSchedule', iconify: 'mdi:calendar-clock' },
+	{ name: 'MdTrendingUp', iconify: 'mdi:trending-up' },
+	{ name: 'MdHandshake', iconify: 'mdi:handshake' },
+	{ name: 'MdAutoAwesome', iconify: 'mdi:auto-fix' },
+	{ name: 'MdGroups', iconify: 'mdi:account-group-outline' },
+	{ name: 'MdPublic', iconify: 'mdi:earth' },
+	{ name: 'MdSchool', iconify: 'mdi:school' },
+	{ name: 'MdWork', iconify: 'mdi:briefcase' },
+	{ name: 'MdEmojiObjects', iconify: 'mdi:lightbulb-outline' },
+	{ name: 'MdStar', iconify: 'mdi:star' },
+	{ name: 'MdThumbUp', iconify: 'mdi:thumb-up-outline' },
+	{ name: 'MdBalance', iconify: 'mdi:scale-balance' },
+	{ name: 'MdFeedback', iconify: 'mdi:comment-text-outline' },
+	{ name: 'MdManageHistory', iconify: 'mdi:calendar-check' },
+	{ name: 'MdRocketLaunch', iconify: 'mdi:rocket-launch' },
+	{ name: 'MdDiversity', iconify: 'mdi:diversify' },
+	{ name: 'MdPrecisionManufacturing', iconify: 'mdi:target' },
+	{ name: 'MdInsights', iconify: 'mdi:chart-line' },
+	{ name: 'MdVolunteerActivism', iconify: 'mdi:heart-plus-outline' },
+	{ name: 'MdSupport', iconify: 'mdi:headset' },
+	{ name: 'MdEngineering', iconify: 'mdi:cog' },
+	{ name: 'MdGroupWork', iconify: 'mdi:account-multiple' },
+	{ name: 'MdTipsAndUpdates', iconify: 'mdi:lightbulb-outline' },
+	{ name: 'MdTimeline', iconify: 'mdi:timeline' },
+]
+
 interface IconPickerProps {
 	onSelect: (iconName: string) => void
+	selectedIcon?: string
+	iconType?: 'skill' | 'competence'
 	size?: number
 	color?: string
 }
 
-export const IconPicker: React.FC<IconPickerProps> = ({ onSelect, size = 24, color = '#0ea5e9' }) => {
+export const IconPicker: React.FC<IconPickerProps> = ({ onSelect, selectedIcon = '', iconType = 'skill', size = 24, color = '#0ea5e9' }) => {
 	const [search, setSearch] = useState('')
 	const [customIcon, setCustomIcon] = useState('')
 	const [previewIcon, setPreviewIcon] = useState<string | null>(null)
 
+	const normalizedSelected = selectedIcon?.trim().toLowerCase() ?? ''
+
+	const iconSource = iconType === 'competence' ? competenceIcons : popularIcons
 	const filteredIcons = useMemo(
-		() => popularIcons.filter((icon) => icon.name.toLowerCase().includes(search.toLowerCase())),
-		[search]
+		() => iconSource.filter((icon) => icon.name.toLowerCase().includes(search.toLowerCase())),
+		[search, iconType]
 	)
 
 	const handleCustomIconPreview = () => {
@@ -164,17 +221,41 @@ export const IconPicker: React.FC<IconPickerProps> = ({ onSelect, size = 24, col
 				{filteredIcons.length === 0 && (
 					<div className='col-span-8 text-center text-xs text-gray-400 py-4'>Nenhum icone encontrado.</div>
 				)}
-				{filteredIcons.map((icon) => (
-					<button
-						key={icon.name}
-						className='flex items-center justify-center p-1 rounded hover:bg-cyan-500/20 focus:bg-cyan-500/30'
-						title={icon.name}
-						type='button'
-						onClick={() => onSelect(icon.name)}
-					>
-						<Icon icon={icon.iconify} width={size} height={size} color={color} />
-					</button>
-				))}
+				{filteredIcons.map((icon) => {
+					const isSelected = normalizedSelected === icon.name.toLowerCase()
+					return (
+						<IconCellErrorBoundary
+							key={icon.name}
+							fallback={
+								<button
+									className={`flex items-center justify-center p-1 rounded transition-colors ${
+										isSelected
+											? 'bg-cyan-500/30 ring-2 ring-cyan-400 ring-inset'
+											: 'hover:bg-cyan-500/20 focus:bg-cyan-500/30'
+									}`}
+									title={icon.name}
+									type='button'
+									onClick={() => onSelect(icon.name)}
+								>
+									<Icon icon={FALLBACK_ICON} width={size} height={size} color={color} />
+								</button>
+							}
+						>
+							<button
+								className={`flex items-center justify-center p-1 rounded transition-colors ${
+									isSelected
+										? 'bg-cyan-500/30 ring-2 ring-cyan-400 ring-inset'
+										: 'hover:bg-cyan-500/20 focus:bg-cyan-500/30'
+								}`}
+								title={icon.name}
+								type='button'
+								onClick={() => onSelect(icon.name)}
+							>
+								<Icon icon={icon.iconify} width={size} height={size} color={color} />
+							</button>
+						</IconCellErrorBoundary>
+					)
+				})}
 			</div>
 
 			{/* Campo para icone customizado */}

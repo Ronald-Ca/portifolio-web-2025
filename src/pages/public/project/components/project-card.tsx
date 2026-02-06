@@ -38,13 +38,19 @@ const ProjectCard = memo(function ProjectCard({ project, index }: ProjectCardPro
             >
                 <div
                     onClick={handleOpen}
+                    role="button"
+                    tabIndex={0}
+                    onKeyDown={(e) => e.key === "Enter" && handleOpen()}
                     className="
-                        h-full overflow-hidden rounded-2xl bg-gradient-to-br from-slate-900/80 via-blue-950/80 to-slate-800/90 border
-                        border-cyan-500/30 shadow-xl hover:shadow-cyan-500/30 group-hover:border-cyan-400 transition-all duration-300 cursor-pointer
-                        backdrop-blur-md relative
+                        h-full min-h-0 overflow-hidden rounded-xl
+                        bg-gradient-to-br from-slate-900/80 via-blue-950/80 to-slate-800/90 border
+                        border-cyan-500/30 shadow-lg hover:shadow-cyan-500/20 hover:shadow-xl
+                        group-hover:border-cyan-400 group-hover:scale-[1.02]
+                        transition-all duration-300 cursor-pointer
+                        backdrop-blur-md relative flex flex-col
                     "
                 >
-                    <div className="relative overflow-hidden rounded-t-2xl">
+                    <div className="relative overflow-hidden rounded-t-xl">
                         <div className="aspect-video overflow-hidden">
                             <img
                                 src={(project.image as string) || "/placeholder.svg"}
@@ -52,7 +58,7 @@ const ProjectCard = memo(function ProjectCard({ project, index }: ProjectCardPro
                                 loading="lazy"
                                 className="
                                     w-full h-full object-cover object-center transform 
-                                    rounded-t-2xl
+                                    rounded-t-xl
                                 "/>
                             <div className="
                                 absolute inset-0 bg-gradient-to-t from-slate-900/80 
@@ -66,25 +72,25 @@ const ProjectCard = memo(function ProjectCard({ project, index }: ProjectCardPro
                         </div>
                     </div>
 
-                    <div className="p-6 flex flex-col gap-3 h-full">
+                    <div className="p-4 flex flex-col gap-2 flex-1 min-h-0">
                         <h3 className="
-                            text-2xl font-extrabold text-cyan-400 mb-1 
-                            group-hover:text-cyan-300 transition-colors drop-shadow-lg tracking-tight"
+                            text-lg font-bold text-cyan-400 
+                            group-hover:text-cyan-300 transition-colors drop-shadow-md tracking-tight line-clamp-1"
                         >
                             {project.name}
                         </h3>
 
-                        <p className="text-slate-300 line-clamp-2 mb-2 h-12 text-base font-medium">
+                        <p className="text-slate-300 line-clamp-2 text-sm font-medium flex-1 min-h-0">
                             {project.description}
                         </p>
 
-                        <div className="flex flex-wrap gap-2 mt-1">
+                        <div className="flex flex-wrap gap-1.5 mt-auto">
                             {displayedSkills.map((stack) => (
                                 <Badge
                                     key={stack.skill?.id}
                                     variant="outline"
                                     className="
-                                        bg-gradient-to-r from-cyan-500/10 to-blue-600/10 text-cyan-300 border-cyan-500/30 font-semibold px-3 py-1 shadow-sm
+                                        bg-gradient-to-r from-cyan-500/10 to-blue-600/10 text-cyan-300 border-cyan-500/30 font-medium text-xs px-2 py-0.5
                                     "
                                 >
                                     {stack.skill?.name}
@@ -95,7 +101,7 @@ const ProjectCard = memo(function ProjectCard({ project, index }: ProjectCardPro
                                     variant="outline"
                                     className="
                                         bg-cyan-500/10 border-cyan-500/30 
-                                        text-cyan-400 font-semibold px-3 py-1
+                                        text-cyan-400 font-medium text-xs px-2 py-0.5
                                     "
                                 >
                                     +{remainingSkillsCount}

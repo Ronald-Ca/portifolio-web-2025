@@ -66,8 +66,8 @@ export default function ConfigSocialMedia() {
 	if (isLoading) return <ConfigSocialMediaSkeleton />
 
 	return (
-		<div className="min-h-full">
-			<div className="mb-6 flex items-center justify-between">
+		<div className="flex flex-col h-full min-h-0">
+			<div className="flex-shrink-0 mb-6 flex items-center justify-between">
 				<h2 className="text-2xl font-bold text-cyan-400 flex items-center gap-2">
 					<span className="bg-cyan-500/10 p-2 rounded-md">
 						<FaEdit className="text-cyan-400" size={24} />
@@ -81,14 +81,15 @@ export default function ConfigSocialMedia() {
 					<IoIosAdd size={20} className="mr-1" /> Adicionar Rede Social
 				</Button>
 			</div>
-			<div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+			<div className="flex-1 min-h-0 overflow-y-auto overflow-x-hidden pr-1 scrollbar-thin scrollbar-track-transparent scrollbar-thumb-cyan-400/50 scrollbar-thumb-rounded-full">
+				<div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 grid-auto-rows-[minmax(220px,auto)] pb-4">
 				{socialMedia && socialMedia.map((media: SocialMediaType, index: number) => (
 					<Card
 						key={index}
 						onClick={() => handleEditClick(media)}
-						className="bg-[#070b14] border border-[#1e2a4a] hover:border-cyan-500/50 transition-all duration-300 hover:shadow-lg hover:shadow-cyan-500/10 cursor-pointer group overflow-hidden relative"
+						className="bg-[#070b14] border border-[#1e2a4a] hover:border-cyan-500/50 transition-all duration-300 hover:shadow-lg hover:shadow-cyan-500/10 cursor-pointer group overflow-hidden relative h-full min-h-[220px] flex flex-col"
 					>
-						<div className="absolute top-2 right-2 flex gap-1">
+						<div className="absolute top-2 right-2 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
 							<Button
 								size="sm"
 								variant="ghost"
@@ -107,7 +108,7 @@ export default function ConfigSocialMedia() {
 							</Button>
 						</div>
 						<div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-cyan-500 to-blue-600 transform origin-left scale-x-0 group-hover:scale-x-100 transition-transform duration-300"></div>
-						<CardHeader className="pb-2 text-center mt-8">
+						<CardHeader className="pb-2 text-center mt-8 flex-1 flex items-center justify-center">
 							<CardTitle className="text-lg font-semibold text-gray-100 group-hover:text-cyan-400 transition-colors">
 								{media.name}
 							</CardTitle>
@@ -116,7 +117,7 @@ export default function ConfigSocialMedia() {
 				))}
 				<Card
 					onClick={handleAddClick}
-					className="bg-[#070b14] border border-dashed border-[#1e2a4a] hover:border-cyan-500/50 transition-all duration-300 flex items-center justify-center h-[180px] cursor-pointer group"
+					className="bg-[#070b14] border border-dashed border-[#1e2a4a] hover:border-cyan-500/50 transition-all duration-300 flex flex-col items-center justify-center min-h-[220px] h-full cursor-pointer group"
 				>
 					<div className="flex flex-col items-center justify-center gap-3 text-gray-500 group-hover:text-cyan-400 transition-colors">
 						<div className="w-16 h-16 rounded-full bg-[#0c1220] flex items-center justify-center group-hover:bg-cyan-500/10 transition-colors">
@@ -125,6 +126,7 @@ export default function ConfigSocialMedia() {
 						<p className="font-medium">Adicionar Rede Social</p>
 					</div>
 				</Card>
+				</div>
 			</div>
 			<Dialog open={isOpen} onOpenChange={setIsOpen}>
 				<DialogContent

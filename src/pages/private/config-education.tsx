@@ -17,6 +17,7 @@ import { AlertDialogFooter, AlertDialogHeader } from '@app/components/ui/alert-d
 import { IoClose } from 'react-icons/io5'
 import { TruncatedName } from '@app/components/common/truncate-tooltip/truncate-name'
 import { ConfigEducationSkeleton } from '@app/components/common/skeleton/config-education-skeleton'
+import { getModalityLabel } from '@app/utils/modality'
 
 export default function ConfigEducation() {
     const { setAlert } = useAlert()
@@ -84,8 +85,8 @@ export default function ConfigEducation() {
     if (isLoading) return <ConfigEducationSkeleton />
 
     return (
-        <div className="min-h-full">
-            <div className="mb-6 flex items-center justify-between">
+        <div className="flex flex-col h-full min-h-0 overflow-hidden">
+            <div className="flex-shrink-0 mb-6 flex items-center justify-between">
                 <h2 className="text-2xl font-bold text-cyan-400 flex items-center gap-2">
                     <span className="bg-cyan-500/10 p-2 rounded-md">
                         <FaGraduationCap className="text-cyan-400" size={24} />
@@ -101,8 +102,8 @@ export default function ConfigEducation() {
                     <IoIosAdd size={20} className="mr-1" /> Adicionar Formação
                 </Button>
             </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="flex-1 min-h-0 overflow-y-auto overflow-x-hidden pr-1 scrollbar-thin scrollbar-track-transparent scrollbar-thumb-cyan-400/50 scrollbar-thumb-rounded-full">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 pb-4">
                 {educations &&
                     educations.map((education: EducationType) => (
                         <Card
@@ -150,7 +151,7 @@ export default function ConfigEducation() {
                                     </p>
                                     {education.modality && (
                                         <Badge variant="outline" className="bg-cyan-500/10 text-cyan-400 border-cyan-500/30">
-                                            {education.modality}
+                                            {getModalityLabel(education.modality)}
                                         </Badge>
                                     )}
                                 </div>
@@ -198,6 +199,7 @@ export default function ConfigEducation() {
                         <p className="font-medium">Adicionar Formação</p>
                     </div>
                 </Card>
+                </div>
             </div>
 
             <Dialog open={isOpen} onOpenChange={setIsOpen}>

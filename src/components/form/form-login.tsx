@@ -32,7 +32,7 @@ export default function FormLogin() {
                 "auth",
                 JSON.stringify({ token: data.data.token })
             );
-            navigate("/config");
+            navigate("/config/home");
         },
         onError: () => {
             setIsLoading(false);

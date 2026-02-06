@@ -1,4 +1,4 @@
-import { useMemo, useCallback, useState, useEffect, type ReactElement } from "react"
+import { useMemo, useCallback } from "react"
 import { IoIosArrowDroprightCircle } from "react-icons/io"
 import { useNavigate } from "react-router-dom"
 import { Button } from "../../../components/ui/button"
@@ -11,51 +11,14 @@ import { DynamicTechIcon } from "@app/components/common/tooltip"
 import { useGetSocialMediaQuery } from "@app/queries/social-media"
 import { iconMap } from "@app/constants/social-medias"
 import { Skeleton } from "@app/components/ui/skeleton"
-import { loadIcons } from "@app/helpers/load-icons"
-import type { MainSkill } from "@app/services/home-service"
-
-type LoadedMainSkill = {
-	id: string
-	name: string
-	icon: ReactElement
-}
-
-function useLoadedMainSkills(mainSkills?: MainSkill[]) {
-	const [loadedSkills, setLoadedSkills] = useState<LoadedMainSkill[]>([])
-	const [isLoading, setIsLoading] = useState(true)
-
-	useEffect(() => {
-		if (!mainSkills || mainSkills.length === 0) {
-			setIsLoading(false)
-			return
-		}
-
-		setIsLoading(true)
-		;(async () => {
-			const loaded: LoadedMainSkill[] = await Promise.all(
-				mainSkills.map(async skill => {
-					const iconElement = await loadIcons(skill.icon.trim(), skill.color ?? "#00BFFF", 30)
-					return {
-						id: skill.id,
-						name: skill.name,
-						icon: iconElement
-					}
-				})
-			)
-			setLoadedSkills(loaded)
-			setIsLoading(false)
-		})()
-	}, [mainSkills])
-
-	return { loadedSkills, isLoading }
-}
+import { loadIconSync } from "@app/helpers/load-icons"
 
 export default function Home() {
 	const navigate = useNavigate()
 
 	const { data: home, isLoading, isError } = useGetHomeQuery()
 	const { data: socialMedia, isLoading: isLoadingSocialMedia } = useGetSocialMediaQuery()
-	const { loadedSkills: mainSkills, isLoading: isLoadingMainSkills } = useLoadedMainSkills(home?.mainSkills)
+	const mainSkills = home?.mainSkills ?? []
 
 	const handleContactClick = useCallback(() => navigate("/contact"), [navigate])
 	const handleProjectsClick = useCallback(() => navigate("/projects"), [navigate])
@@ -184,14 +147,21 @@ export default function Home() {
 							py-4
 						"
 					>
-						{isLoadingMainSkills
-							? Array.from({ length: 5 }).map((_, i) => (
-								<Skeleton key={i} className="w-14 h-14 rounded-xl animate-pulse bg-gray-600" />
-							))
-							: mainSkills.map(skill => (
-								<DynamicTechIcon key={skill.id} label={skill.name} icon={skill.icon} />
-							))
-						}
+						{mainSkills.map(skill => {
+							const id = typeof skill === 'string' ? skill : skill.id
+							const label = typeof skill === 'string' ? skill : skill.name
+							const icon =
+								typeof skill === 'string'
+									? loadIconSync('', '#00BFFF', 30)
+									: loadIconSync(skill.icon?.trim() ?? '', skill.color ?? '#00BFFF', 30)
+							return (
+								<DynamicTechIcon
+									key={id}
+									label={label}
+									icon={icon}
+								/>
+							)
+						})}
 					</div>
 				</div>
 			</TooltipProvider>

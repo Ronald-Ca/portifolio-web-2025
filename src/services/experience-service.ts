@@ -29,8 +29,11 @@ export type ExperienceType = {
 	role: string
 	yearInitial: number
 	mothInitial: string
-	yearFinal?: number
-	mothFinal: string
+	yearFinal?: number | null
+	mothFinal?: string | null
+	currentJob?: boolean
+	modality?: 'on-site' | 'hybrid' | 'remote'
+	description?: string | null
 	activities: string[]
 	experienceSkill: ExperienceSkillType[]
 }

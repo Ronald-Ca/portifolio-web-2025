@@ -13,6 +13,7 @@ interface HomeData {
   description: string
   colorBackground: string
   imageBackground: File | null
+  mainSkills: string[]
 }
 
 interface FormHomeProps {

@@ -52,17 +52,85 @@ function toKebabCase(str: string): string {
 		.toLowerCase()
 }
 
-// Converte nome react-icons para formato Iconify
-// Ex: "TbBrandMysql" -> "tabler:brand-mysql"
+const reactIconToIconify: Record<string, string> = {
+	FaHtml5: 'simple-icons:html5',
+	FaCss3Alt: 'simple-icons:css3',
+	FaReact: 'skill-icons:react',
+	React: 'skill-icons:react',
+	react: 'skill-icons:react',
+	SiReact: 'skill-icons:react',
+	SiReactnative: 'skill-icons:react',
+	FaNodeJs: 'simple-icons:nodedotjs',
+	FaGitAlt: 'simple-icons:git',
+	FaGithub: 'simple-icons:github',
+	FaDocker: 'simple-icons:docker',
+	FaVuejs: 'simple-icons:vuedotjs',
+	FaJava: 'fa-brands:java',
+	FaAws: 'simple-icons:amazonaws',
+	FaAngular: 'simple-icons:angular',
+	FaLinux: 'simple-icons:linux',
+	SiTypescript: 'simple-icons:typescript',
+	SiJavascript: 'simple-icons:javascript',
+	SiMongodb: 'simple-icons:mongodb',
+	SiMysql: 'simple-icons:mysql',
+	SiPostgresql: 'simple-icons:postgresql',
+	SiDocker: 'simple-icons:docker',
+	SiGit: 'simple-icons:git',
+	SiNodedotjs: 'simple-icons:nodedotjs',
+	SiDrizzle: 'simple-icons:drizzle',
+	SiRadixui: 'simple-icons:radixui',
+	SiVitest: 'simple-icons:vitest',
+	SiBiome: 'simple-icons:biome',
+	TbBrandMysql: 'tabler:brand-mysql',
+	TbBrandMongodb: 'tabler:brand-mongodb',
+	TbBrandSocketIo: 'mdi:lan-connect',
+	IoLogoJavascript: 'simple-icons:javascript',
+	DiMongodb: 'simple-icons:mongodb',
+	BsFiletypeSql: 'bi:filetype-sql',
+	MdGroups2: 'mdi:account-group',
+	RiFocus3Fill: 'ri:focus-3-fill',
+	RiSpeakLine: 'ri:speak-line',
+	SiPersistent: 'mdi:infinity',
+	MdAccountGroup: 'mdi:account-group',
+	MdMessage: 'mdi:message-text',
+	MdLeaderboard: 'mdi:podium',
+	MdLightbulb: 'mdi:lightbulb-on',
+	MdPsychology: 'mdi:psychology',
+	MdSchedule: 'mdi:calendar-clock',
+	MdTrendingUp: 'mdi:trending-up',
+	MdHandshake: 'mdi:handshake',
+	MdAutoAwesome: 'mdi:auto-fix',
+	MdGroups: 'mdi:account-group-outline',
+	MdPublic: 'mdi:earth',
+	MdSchool: 'mdi:school',
+	MdWork: 'mdi:briefcase',
+	MdEmojiObjects: 'mdi:lightbulb-outline',
+	MdStar: 'mdi:star',
+	MdThumbUp: 'mdi:thumb-up-outline',
+	MdBalance: 'mdi:scale-balance',
+	MdFeedback: 'mdi:comment-text-outline',
+	MdManageHistory: 'mdi:calendar-check',
+	MdRocketLaunch: 'mdi:rocket-launch',
+	MdDiversity: 'mdi:diversify',
+	MdPrecisionManufacturing: 'mdi:target',
+	MdInsights: 'mdi:chart-line',
+	MdVolunteerActivism: 'mdi:heart-plus-outline',
+	MdSupport: 'mdi:headset',
+	MdEngineering: 'mdi:cog',
+	MdGroupWork: 'mdi:account-multiple',
+	MdTipsAndUpdates: 'mdi:lightbulb-outline',
+	MdTimeline: 'mdi:timeline',
+}
+
 export function toIconifyName(reactIconName: string): string {
 	const trimmed = reactIconName.trim()
+	if (!trimmed) return 'mdi:code-tags'
+	const fromMap = reactIconToIconify[trimmed]
+	if (fromMap) return fromMap
 	const { prefix, name } = getPrefix(trimmed)
 	const iconifyPrefix = prefixMap[prefix]
-
 	if (!iconifyPrefix) {
-		console.warn(`Prefixo desconhecido: ${prefix} para icone ${trimmed}`)
-		return 'mdi:help-circle'
+		return 'mdi:code-tags'
 	}
-
 	return `${iconifyPrefix}:${toKebabCase(name)}`
 }

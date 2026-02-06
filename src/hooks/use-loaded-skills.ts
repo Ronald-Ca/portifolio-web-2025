@@ -1,6 +1,6 @@
 import { SkillType } from "@app/services/skill-service"
-import { type ReactElement, useState, useEffect } from "react"
-import { loadIcons } from "@app/helpers/load-icons"
+import { type ReactElement, useMemo } from "react"
+import { loadIconSync } from "@app/helpers/load-icons"
 import { useGetSkillsQuery } from "@app/queries/skill"
 
 type LoadedSkill = Omit<SkillType, "icon"> & {
@@ -10,26 +10,18 @@ type LoadedSkill = Omit<SkillType, "icon"> & {
 
 export function useLoadedSkills() {
   const { data: rawSkills, isLoading, isError } = useGetSkillsQuery()
-  const [loadedSkills, setLoadedSkills] = useState<LoadedSkill[]>([])
 
-  useEffect(() => {
-    if (!rawSkills) return
-
-    ;(async () => {
-      const withIcons: LoadedSkill[] = await Promise.all(
-        rawSkills.map(async s => {
-          const iconElement = await loadIcons(s.icon.trim(), s.color ?? "#00BFFF")
-
-          const { icon: _iconString, ...rest } = s
-          return {
-            ...rest,
-            stars: s.level,
-            icon: iconElement,
-          }
-        })
-      )
-      setLoadedSkills(withIcons)
-    })()
+  const loadedSkills = useMemo((): LoadedSkill[] => {
+    if (!rawSkills?.length) return []
+    return rawSkills.map(s => {
+      const iconElement = loadIconSync(s.icon?.trim() ?? "", s.color ?? "#00BFFF", 40)
+      const { icon: _iconString, ...rest } = s
+      return {
+        ...rest,
+        stars: s.level,
+        icon: iconElement,
+      }
+    })
   }, [rawSkills])
 
   return { loadedSkills, isLoading, isError }

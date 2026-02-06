@@ -14,7 +14,7 @@ export default class AboutService extends BaseService {
 	async createAbout(data: AboutType): Promise<DefaultReturnType<AboutType>> {
 		const formData = new FormData()
 		formData.append('name', data.name)
-		formData.append('age', data.age.toString())
+		if (data.birthDate) formData.append('birthDate', data.birthDate)
 		formData.append('city', data.city)
 		formData.append('state', data.state)
 		if (data.image) {
@@ -28,7 +28,7 @@ export default class AboutService extends BaseService {
 	async updateAbout(data: AboutType): Promise<DefaultReturnType<AboutType>> {
 		const formData = new FormData()
 		formData.append('name', data.name)
-		formData.append('age', data.age.toString())
+		if (data.birthDate) formData.append('birthDate', data.birthDate)
 		formData.append('city', data.city)
 		formData.append('state', data.state)
 		if (data.image) {
@@ -43,7 +43,8 @@ export default class AboutService extends BaseService {
 export type AboutType = {
 	id?: string
 	name: string
-	age: number
+	birthDate?: string
+	age?: number
 	city: string
 	state: string
 	image: File | null

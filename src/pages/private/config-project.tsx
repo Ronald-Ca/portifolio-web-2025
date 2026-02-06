@@ -1,12 +1,16 @@
 import { FormProject } from '@app/components/form/form-project'
+import FormSkill from '@app/components/form/form-skill'
 import { Card, CardContent, CardHeader, CardTitle } from '@app/components/ui/card'
 import { Button } from '@app/components/ui/button'
 import { useAlert } from '@app/contexts/alert-context'
 import { useCreateProjectMutation, useGetProjectsQuery, useUpdateProjectMutation } from '@app/queries/project'
+import { useCreateSkillMutation } from '@app/queries/skill'
+import { queryKeys } from '@app/queries/query-keys'
 import { ProjectType } from '@app/services/project-service'
+import { SkillType } from '@app/services/skill-service'
 import { Dialog, DialogContent, DialogTitle } from '@radix-ui/react-dialog'
 import { useState } from 'react'
-import { FaEdit, FaTrash } from 'react-icons/fa'
+import { FaCode, FaEdit, FaTrash } from 'react-icons/fa'
 import { IoIosAdd, IoIosClose } from 'react-icons/io'
 import { useQueryClient } from '@tanstack/react-query'
 import { ConfigProjectSkeleton } from '@app/components/common/skeleton/config-project-skeleton'
@@ -17,6 +21,7 @@ export default function ConfigProject() {
 	const [isOpen, setIsOpen] = useState(false)
 	const [selectedProject, setSelectedProject] = useState<ProjectType | undefined>(undefined)
 	const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false)
+	const [isCreateSkillOpen, setIsCreateSkillOpen] = useState(false)
 
 	const handleEditClick = (project: ProjectType) => {
 		setSelectedProject(project)
@@ -29,6 +34,17 @@ export default function ConfigProject() {
 	}
 
 	const { data: projects, isLoading } = useGetProjectsQuery()
+
+	const createSkill = useCreateSkillMutation({
+		onSuccess: () => {
+			setIsCreateSkillOpen(false)
+			queryClient.invalidateQueries({ queryKey: queryKeys.skill.all })
+			setAlert({ title: 'Sucesso!', message: 'Habilidade criada com sucesso!', type: 'success' })
+		},
+		onError: () => {
+			setAlert({ title: 'Erro!', message: 'Erro ao criar a habilidade!', type: 'error' })
+		},
+	})
 
 	const createProject = useCreateProjectMutation({
 		onSuccess: () => {
@@ -60,13 +76,19 @@ export default function ConfigProject() {
 		}
 	}
 
+	const handleSaveSkill = (data: SkillType) => {
+		const experience = Number(data.experience)
+		const level = Number(data.level)
+		createSkill.mutate({ ...data, experience, level })
+	}
+
 	const isMutating = createProject.isLoading || updateProject.isLoading
 
 	if (isLoading) return <ConfigProjectSkeleton />
 
 	return (
-		<div className="min-h-full">
-			<div className="mb-6 flex items-center justify-between">
+		<div className="flex flex-col h-full min-h-0">
+			<div className="flex-shrink-0 mb-6 flex items-center justify-between">
 				<h2 className="text-2xl font-bold text-cyan-400 flex items-center gap-2">
 					<span className="bg-cyan-500/10 p-2 rounded-md">
 						<FaEdit className="text-cyan-400" size={24} />
@@ -82,7 +104,8 @@ export default function ConfigProject() {
 					<IoIosAdd size={20} className="mr-1" /> Adicionar Projeto
 				</Button>
 			</div>
-			<div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+			<div className="flex-1 min-h-0 overflow-y-auto overflow-x-hidden pr-1 scrollbar-thin scrollbar-track-transparent scrollbar-thumb-cyan-400/50 scrollbar-thumb-rounded-full">
+				<div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 pb-4">
 				{projects && projects.map((project: ProjectType, index: number) => (
 					<Card
 						key={index}
@@ -155,6 +178,7 @@ export default function ConfigProject() {
 						<p className="font-medium">Adicionar Projeto</p>
 					</div>
 				</Card>
+				</div>
 			</div>
 			<Dialog open={isOpen} onOpenChange={setIsOpen}>
 				<DialogContent
@@ -179,7 +203,35 @@ export default function ConfigProject() {
 							<IoIosClose className="cursor-pointer" onClick={() => setIsOpen(false)} />
 						</DialogTitle>
 					</div>
-					<FormProject selectedProject={selectedProject} handleSave={handleSave} isSubmitting={isMutating} />
+					<FormProject
+						selectedProject={selectedProject}
+						handleSave={handleSave}
+						isSubmitting={isMutating}
+						onOpenCreateSkill={() => setIsCreateSkillOpen(true)}
+					/>
+				</DialogContent>
+			</Dialog>
+			<Dialog open={isCreateSkillOpen} onOpenChange={setIsCreateSkillOpen}>
+				<DialogContent
+					className="
+					fixed top-1/2 left-1/2 p-4 rounded-lg
+					transform -translate-x-1/2 -translate-y-1/2
+					bg-[#0c1220] border border-[#1e2a4a] text-gray-100
+					w-full max-w-2xl max-h-[90vh] overflow-y-auto
+					scrollbar-thin scrollbar-track-transparent scrollbar-thumb-cyan-400
+					"
+				>
+					<div className="mb-4">
+						<DialogTitle className="text-xl font-semibold text-cyan-400 flex items-center gap-2">
+							<FaCode size={18} />
+							Criar habilidade
+						</DialogTitle>
+					</div>
+					<FormSkill
+						selectedSkill={null}
+						handleSave={handleSaveSkill}
+						isSubmitting={createSkill.isLoading}
+					/>
 				</DialogContent>
 			</Dialog>
 			<Dialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>

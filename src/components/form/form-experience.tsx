@@ -6,21 +6,21 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '.
 import { Textarea } from '../ui/textarea'
 import { moths, years } from '../../utils/moths-and-years'
 import { ExperienceType } from '../../services/experience-service'
-import { useEffect, useState } from 'react'
-import { DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '../ui/dropdown-menu'
-import { useGetSkillsQuery } from '@app/queries/skill'
+import { useEffect } from 'react'
+import { SkillsMultiSelect } from '@app/components/common/skills-multi-select'
 import { FaBriefcase, FaCalendarAlt, FaCode, FaSave, FaSpinner, FaTasks } from 'react-icons/fa'
 import { Separator } from '@radix-ui/react-separator'
-import { Badge } from '../ui/badge'
-import { ScrollArea } from '@radix-ui/react-scroll-area'
+import { Checkbox } from '../ui/checkbox'
+import { modality } from '@app/utils/modality'
 
 interface ExperienceFormProps {
 	selectedExperience?: ExperienceType
 	handleSave: (experience: ExperienceType) => void
 	isSubmitting?: boolean
+	onOpenCreateSkill?: () => void
 }
 
-export function FormExperience({ selectedExperience, handleSave, isSubmitting = false }: ExperienceFormProps) {
+export function FormExperience({ selectedExperience, handleSave, isSubmitting = false, onOpenCreateSkill }: ExperienceFormProps) {
 	const form = useForm({
 		defaultValues: {
 			company: "",
@@ -29,22 +29,15 @@ export function FormExperience({ selectedExperience, handleSave, isSubmitting = 
 			mothInitial: "",
 			yearFinal: "",
 			mothFinal: "",
+			currentJob: false,
+			modality: undefined as string | undefined,
+			description: "",
 			activities: "",
 			experienceSkill: [] as string[],
 		},
 	})
 
-	const { reset, handleSubmit, watch, setValue } = form
-	const { data: skills, isLoading: isLoadingSkills } = useGetSkillsQuery()
-	const [selectedSkills, setSelectedSkills] = useState<string[]>([])
-	const [isOpen, setIsOpen] = useState(false)
-
-	// Observar mudanças no campo experienceSkill
-	const experienceSkillValue = watch("experienceSkill")
-
-	useEffect(() => {
-		setSelectedSkills(experienceSkillValue || [])
-	}, [experienceSkillValue])
+	const { reset, handleSubmit } = form
 
 	useEffect(() => {
 		const defaultValues = {
@@ -52,8 +45,11 @@ export function FormExperience({ selectedExperience, handleSave, isSubmitting = 
 			role: selectedExperience?.role || "",
 			yearInitial: selectedExperience?.yearInitial?.toString() || "",
 			mothInitial: selectedExperience?.mothInitial || "",
-			yearFinal: selectedExperience?.yearFinal?.toString() || "",
-			mothFinal: selectedExperience?.mothFinal || "",
+			yearFinal: selectedExperience?.yearFinal?.toString() ?? "",
+			mothFinal: selectedExperience?.mothFinal ?? "",
+			currentJob: selectedExperience?.currentJob ?? false,
+			modality: selectedExperience?.modality ?? undefined,
+			description: selectedExperience?.description ?? "",
 			activities: selectedExperience?.activities ? selectedExperience.activities.join(";\n") : "",
 			experienceSkill:
 				selectedExperience?.experienceSkill?.map((item) => (typeof item === "string" ? item : item.skillId)) || [],
@@ -61,9 +57,9 @@ export function FormExperience({ selectedExperience, handleSave, isSubmitting = 
 		}
 
 		reset(defaultValues)
-		setSelectedSkills(defaultValues.experienceSkill || [])
 	}, [selectedExperience, reset])
 
+	const currentJob = form.watch('currentJob')
 	const onSubmit = (data: Record<string, unknown>) => {
 		const experienceSkillIds = Array.isArray(data.experienceSkill) ? data.experienceSkill as string[] : []
 		const newExperience = {
@@ -71,8 +67,11 @@ export function FormExperience({ selectedExperience, handleSave, isSubmitting = 
 			role: String(data.role),
 			yearInitial: Number.parseInt(String(data.yearInitial)),
 			mothInitial: String(data.mothInitial),
-			yearFinal: data.yearFinal && String(data.yearFinal).trim() !== "" ? Number.parseInt(String(data.yearFinal)) : undefined,
-			mothFinal: String(data.mothFinal),
+			yearFinal: data.currentJob ? undefined : (data.yearFinal && String(data.yearFinal).trim() !== "" ? Number.parseInt(String(data.yearFinal)) : undefined),
+			mothFinal: data.currentJob ? "Present" : String(data.mothFinal || ""),
+			currentJob: Boolean(data.currentJob),
+			modality: data.modality ? (data.modality as 'on-site' | 'hybrid' | 'remote') : undefined,
+			description: data.description ? String(data.description).trim() || undefined : undefined,
 			activities: String(data.activities)
 				.split(";")
 				.map((item: string) => item.trim())
@@ -81,26 +80,6 @@ export function FormExperience({ selectedExperience, handleSave, isSubmitting = 
 			...(selectedExperience?.id ? { id: selectedExperience.id } : {})
 		} as ExperienceType
 		handleSave(newExperience)
-	}
-
-	// Função para obter o nome da skill pelo ID
-	const getSkillName = (skillId: string) => {
-		const skill = skills?.find((s) => s.id === skillId)
-		return skill?.name || skillId
-	}
-
-	const handleToggle = () => setIsOpen((prev) => !prev)
-	const handleClose = () => setIsOpen(false)
-
-	const handleSkillChange = (skillId: string, checked: boolean, field: { value?: string[], onChange: (value: string[]) => void }) => {
-		const newValue = checked
-			? [...(field.value ?? []), skillId]
-			: (field.value ?? []).filter((id: string) => id !== skillId)
-
-		const sanitizedValue = newValue.filter((id: string | undefined): id is string => id !== undefined)
-
-		field.onChange(sanitizedValue)
-		setValue("experienceSkill", sanitizedValue)
 	}
 
 	return (
@@ -160,6 +139,49 @@ export function FormExperience({ selectedExperience, handleSave, isSubmitting = 
 						<FaCalendarAlt className="text-cyan-500" size={16} />
 						<h3 className="text-gray-300 font-medium">Período</h3>
 					</div>
+
+					<FormField
+						control={form.control}
+						name="currentJob"
+						render={({ field }) => (
+							<FormItem className="flex flex-row items-center gap-3 space-y-0">
+								<FormControl>
+									<Checkbox
+										checked={field.value}
+										onCheckedChange={field.onChange}
+									/>
+								</FormControl>
+								<FormLabel className="text-gray-300 font-normal cursor-pointer">
+									Trabalho atual (ainda atuo neste local)
+								</FormLabel>
+							</FormItem>
+						)}
+					/>
+
+					<FormField
+						control={form.control}
+						name="modality"
+						render={({ field }) => (
+							<FormItem>
+								<FormLabel className="text-gray-300">Modalidade</FormLabel>
+								<FormControl>
+									<Select value={field.value ?? ''} onValueChange={field.onChange}>
+										<SelectTrigger className="bg-[#070b14] border border-[#1e2a4a] focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 text-gray-100 rounded-md">
+											<SelectValue placeholder="Selecione a modalidade" />
+										</SelectTrigger>
+										<SelectContent className="bg-[#0c1220] border border-[#1e2a4a] text-gray-100">
+											{modality.map((item) => (
+												<SelectItem key={item.id} value={item.id} className="focus:bg-cyan-500/20 focus:text-cyan-50">
+													{item.name}
+												</SelectItem>
+											))}
+										</SelectContent>
+									</Select>
+								</FormControl>
+								<FormMessage className="text-red-400" />
+							</FormItem>
+						)}
+					/>
 
 					<div className="grid grid-cols-2 gap-4">
 						<div className="space-y-4">
@@ -232,11 +254,14 @@ export function FormExperience({ selectedExperience, handleSave, isSubmitting = 
 									<FormItem>
 										<FormLabel className="text-gray-300">Ano Final</FormLabel>
 										<FormControl>
-											<Select value={field.value} onValueChange={field.onChange}>
+											<Select value={field.value} onValueChange={field.onChange} disabled={currentJob}>
 												<SelectTrigger className="bg-[#070b14] border border-[#1e2a4a] focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 text-gray-100 rounded-md">
-													<SelectValue placeholder="Selecione o Ano" />
+													<SelectValue placeholder={currentJob ? "Atual" : "Selecione o Ano"} />
 												</SelectTrigger>
 												<SelectContent className="bg-[#0c1220] border border-[#1e2a4a] text-gray-100 max-h-60">
+													<SelectItem key="Present" value="Present" className="focus:bg-cyan-500/20 focus:text-cyan-50">
+														Atual
+													</SelectItem>
 													{years.map((year) => (
 														<SelectItem
 															key={year.year}
@@ -261,9 +286,9 @@ export function FormExperience({ selectedExperience, handleSave, isSubmitting = 
 									<FormItem>
 										<FormLabel className="text-gray-300">Mês Final</FormLabel>
 										<FormControl>
-											<Select value={field.value} onValueChange={field.onChange}>
+											<Select value={field.value} onValueChange={field.onChange} disabled={currentJob}>
 												<SelectTrigger className="bg-[#070b14] border border-[#1e2a4a] focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 text-gray-100 rounded-md">
-													<SelectValue placeholder="Selecione o Mês" />
+													<SelectValue placeholder={currentJob ? "Atual" : "Selecione o Mês"} />
 												</SelectTrigger>
 												<SelectContent className="bg-[#0c1220] border border-[#1e2a4a] text-gray-100 max-h-60">
 													<SelectItem key="Present" value="Present" className="focus:bg-cyan-500/20 focus:text-cyan-50">
@@ -294,8 +319,26 @@ export function FormExperience({ selectedExperience, handleSave, isSubmitting = 
 				<div className="space-y-4">
 					<div className="flex items-center gap-2 mb-2">
 						<FaTasks className="text-cyan-500" size={16} />
-						<h3 className="text-gray-300 font-medium">Atividades Desenvolvidas</h3>
+						<h3 className="text-gray-300 font-medium">Descrição e Atividades</h3>
 					</div>
+
+					<FormField
+						control={form.control}
+						name="description"
+						render={({ field }) => (
+							<FormItem>
+								<FormLabel className="text-gray-300">Descrição (o que está desenvolvendo)</FormLabel>
+								<FormControl>
+									<Textarea
+										{...field}
+										placeholder="Resumo do que você faz ou desenvolve neste cargo..."
+										className="bg-[#070b14] border border-[#1e2a4a] focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 text-gray-100 rounded-md min-h-[80px] resize-y"
+									/>
+								</FormControl>
+								<FormMessage className="text-red-400" />
+							</FormItem>
+						)}
+					/>
 
 					<FormField
 						control={form.control}
@@ -323,110 +366,38 @@ export function FormExperience({ selectedExperience, handleSave, isSubmitting = 
 				<Separator className="bg-[#1e2a4a]" />
 
 				<div className="space-y-4">
-					<div className="flex items-center gap-2 mb-2">
-						<FaCode className="text-cyan-500" size={16} />
-						<h3 className="text-gray-300 font-medium">Tecnologias Utilizadas</h3>
+					<div className="flex items-center justify-between gap-2 mb-2">
+						<div className="flex items-center gap-2">
+							<FaCode className="text-cyan-500" size={16} />
+							<h3 className="text-gray-300 font-medium">Tecnologias Utilizadas</h3>
+						</div>
+						{onOpenCreateSkill && (
+							<Button
+								type="button"
+								variant="outline"
+								size="sm"
+								className="bg-[#070b14] border-[#1e2a4a] text-cyan-400 hover:bg-cyan-500/10 hover:text-cyan-300"
+								onClick={onOpenCreateSkill}
+							>
+								Criar habilidade
+							</Button>
+						)}
 					</div>
 
 					<FormField
 						control={form.control}
 						name="experienceSkill"
-						render={({ field }) => {
-							return (
-								<FormItem className="flex flex-col">
-									<FormLabel className="text-gray-300">Skills</FormLabel>
-									<div className="flex flex-col gap-3">
-										<FormControl>
-											<DropdownMenu open={isOpen} onOpenChange={setIsOpen}>
-												<DropdownMenuTrigger asChild>
-													<Button
-														variant="outline"
-														className="w-full bg-[#070b14] border border-[#1e2a4a] focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 text-gray-100 rounded-md justify-between"
-														onClick={(e) => {
-															e.preventDefault()
-															handleToggle()
-														}}
-													>
-														<span>
-															{selectedSkills?.length > 0
-																? `${selectedSkills.length} skill${selectedSkills.length > 1 ? "s" : ""} selecionada${selectedSkills.length > 1 ? "s" : ""
-																}`
-																: "Selecionar skills"}
-														</span>
-														<span className="text-gray-400">▼</span>
-													</Button>
-												</DropdownMenuTrigger>
-												<DropdownMenuContent
-													className="w-[300px] bg-[#0c1220] border border-[#1e2a4a] text-gray-100 rounded-md shadow-lg shadow-black/20"
-													onClick={(e) => e.stopPropagation()}
-													onPointerDownOutside={(e) => {
-														e.preventDefault()
-														handleClose()
-													}}
-												>
-													<DropdownMenuLabel className="text-cyan-400 font-medium border-b border-[#1e2a4a] pb-2">
-														Selecione as Skills
-													</DropdownMenuLabel>
-													<DropdownMenuSeparator />
-													<ScrollArea className="h-[200px]">
-														{isLoadingSkills ? (
-															<div className="flex justify-center items-center h-20">
-																<FaSpinner className="animate-spin text-cyan-500" />
-															</div>
-														) : (
-															skills?.map((skill) => {
-																if (!skill.id) return null
-																const isChecked = field.value?.includes(skill.id) ?? false
-
-																return (
-																	<DropdownMenuCheckboxItem
-																		key={skill.id}
-																		checked={isChecked}
-																		className="focus:bg-cyan-500/20 focus:text-cyan-50 cursor-pointer"
-																		onCheckedChange={(checked) => {
-																			skill.id && handleSkillChange(skill.id, checked, field)
-																		}}
-																	>
-																		{skill.name}
-																	</DropdownMenuCheckboxItem>
-																)
-															})
-														)}
-													</ScrollArea>
-												</DropdownMenuContent>
-											</DropdownMenu>
-										</FormControl>
-
-										{selectedSkills.length > 0 && (
-											<div className="flex flex-wrap gap-2 mt-2">
-												{selectedSkills.map((skillId) => (
-													<Badge
-														key={skillId}
-														variant="outline"
-														className="bg-cyan-500/10 text-cyan-400 border-cyan-500/30 flex items-center gap-1 pl-2 pr-1 py-1"
-													>
-														{getSkillName(skillId)}
-														<Button
-															variant="ghost"
-															size="sm"
-															className="h-4 w-4 p-0 text-cyan-400 hover:text-cyan-100 hover:bg-transparent"
-															onClick={(e) => {
-																e.preventDefault()
-																const newValue = field.value.filter((id: string) => id !== skillId)
-																field.onChange(newValue)
-																setValue("experienceSkill", newValue)
-															}}
-														>
-															×
-														</Button>
-													</Badge>
-												))}
-											</div>
-										)}
-									</div>
-								</FormItem>
-							)
-						}}
+						render={({ field }) => (
+							<FormItem className="flex flex-col">
+								<FormControl>
+									<SkillsMultiSelect
+										label="Stacks"
+										value={field.value ?? []}
+										onChange={(v) => field.onChange(v)}
+									/>
+								</FormControl>
+							</FormItem>
+						)}
 					/>
 				</div>
 

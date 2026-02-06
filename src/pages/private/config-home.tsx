@@ -1,14 +1,21 @@
 import { FormHome } from '@app/components/form/form-home'
+import FormSkill from '@app/components/form/form-skill'
 import { Input } from '@app/components/ui/input'
 import { useAlert } from '@app/contexts/alert-context'
 import { useCreateHomeMutation, useGetHomeQuery, useUpdateHomeMutation } from '@app/queries/home'
+import { useCreateSkillMutation } from '@app/queries/skill'
 import { HomeType } from '@app/services/home-service'
+import { SkillType } from '@app/services/skill-service'
 import { useEffect, useRef, useState } from 'react'
 import { FormProvider, useForm } from 'react-hook-form'
-import { FaCamera } from 'react-icons/fa'
+import { useQueryClient } from '@tanstack/react-query'
+import { queryKeys } from '@app/queries/query-keys'
+import { FaCamera, FaCode } from 'react-icons/fa'
 import { IoMdColorPalette } from 'react-icons/io'
 import { Card, CardContent } from '@app/components/ui/card'
+import { Dialog, DialogContent, DialogTitle } from '@app/components/ui/dialog'
 import { ConfigHomeSkeleton } from '@app/components/common/skeleton/config-home-skeleton'
+import { SkillsMultiSelect } from '@app/components/common/skills-multi-select'
 
 export default function ConfigHome() {
 	const [imagePreview, setImagePreview] = useState("")
@@ -18,8 +25,21 @@ export default function ConfigHome() {
 	const bgFileInputRef = useRef<HTMLInputElement>(null)
 	const [, setSelectedFile] = useState<File | null>(null)
 	const [, setSelectedBgFile] = useState<File | null>(null)
+	const [isCreateSkillOpen, setIsCreateSkillOpen] = useState(false)
 
+	const queryClient = useQueryClient()
 	const { data: home, isSuccess, isLoading } = useGetHomeQuery()
+
+	const createSkill = useCreateSkillMutation({
+		onSuccess: () => {
+			setIsCreateSkillOpen(false)
+			queryClient.invalidateQueries({ queryKey: queryKeys.skill.all })
+			setAlert({ title: "Sucesso!", message: "Habilidade criada com sucesso!", type: "success" })
+		},
+		onError: () => {
+			setAlert({ title: "Erro!", message: "Erro ao criar a habilidade!", type: "error" })
+		},
+	})
 
 	const formMethods = useForm<HomeType>({
 		defaultValues: {
@@ -29,8 +49,11 @@ export default function ConfigHome() {
 			description: "",
 			colorBackground: "#0f172a",
 			imageBackground: null,
+			mainSkills: [],
 		},
 	})
+
+	const mainSkills = formMethods.watch('mainSkills') ?? []
 
 	const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
 		const file = event.target.files?.[0]
@@ -87,6 +110,12 @@ export default function ConfigHome() {
 		}
 	}
 
+	const handleSaveSkill = (data: SkillType) => {
+		const experience = Number(data.experience)
+		const level = Number(data.level)
+		createSkill.mutate({ ...data, experience, level })
+	}
+
 	useEffect(() => {
 		if (isSuccess && home) {
 			if (home.image && typeof home.image === "string") {
@@ -95,13 +124,17 @@ export default function ConfigHome() {
 			if (home.imageBackground && typeof home.imageBackground === "string") {
 				setBgImagePreview(home.imageBackground)
 			}
+			const mainSkillIds = Array.isArray(home.mainSkills)
+				? home.mainSkills.map((s: { id?: string } | string) => (typeof s === 'string' ? s : s.id)).filter(Boolean) as string[]
+				: []
 			formMethods.reset({
 				image: null,
 				title: home.title,
 				role: home.role,
-				description: home.description,
+				description: home.description ?? "",
 				colorBackground: home.colorBackground || "#0f172a",
 				imageBackground: null,
+				mainSkills: mainSkillIds,
 			})
 		}
 	}, [isSuccess, home, formMethods])
@@ -112,7 +145,9 @@ export default function ConfigHome() {
 
 	return (
 		<FormProvider {...formMethods}>
-			<div className="min-h-full flex flex-col items-center">
+			<div className="flex flex-col h-full min-h-0 overflow-hidden">
+			<div className="flex-1 min-h-0 overflow-y-auto overflow-x-hidden pr-1 scrollbar-thin scrollbar-track-transparent scrollbar-thumb-cyan-400/50 scrollbar-thumb-rounded-full">
+			<div className="min-h-full flex flex-col items-center py-4">
 				<div className="w-full max-w-3xl">
 					<h2 className="text-2xl font-bold text-cyan-400 mb-6 flex items-center gap-2">
 						<span className="bg-cyan-500/10 p-2 rounded-md">
@@ -200,6 +235,18 @@ export default function ConfigHome() {
 								</div>
 
 								<div className="w-full">
+									<SkillsMultiSelect
+										label="Principais stacks"
+										placeholder="Selecionar principais stacks"
+										dropdownLabel="Principais stacks"
+										value={Array.isArray(mainSkills) ? mainSkills.map((s): string => (typeof s === 'string' ? s : s.id)) : []}
+										onChange={(v) => formMethods.setValue('mainSkills', v)}
+										showCreateButton
+										onCreateClick={() => setIsCreateSkillOpen(true)}
+									/>
+								</div>
+
+								<div className="w-full">
 									<h3 className="text-gray-300 font-medium mb-4 flex items-center gap-2">
 										<span className="h-1 w-1 rounded-full bg-cyan-400"></span>
 										Informações Pessoais
@@ -213,6 +260,30 @@ export default function ConfigHome() {
 					</Card>
 				</div>
 			</div>
+			</div>
+			</div>
+
+			<Dialog open={isCreateSkillOpen} onOpenChange={setIsCreateSkillOpen}>
+				<DialogContent
+					className="
+						bg-[#0c1220] border border-[#1e2a4a] text-gray-100
+						max-w-2xl max-h-[90vh] overflow-y-auto
+						scrollbar-thin scrollbar-track-transparent scrollbar-thumb-cyan-400
+					"
+				>
+					<div className="mb-4">
+						<DialogTitle className="text-xl font-semibold text-cyan-400 flex items-center gap-2">
+							<FaCode size={18} />
+							Criar habilidade
+						</DialogTitle>
+					</div>
+					<FormSkill
+						selectedSkill={null}
+						handleSave={handleSaveSkill}
+						isSubmitting={createSkill.isLoading}
+					/>
+				</DialogContent>
+			</Dialog>
 		</FormProvider>
 	)
 }

@@ -1,10 +1,9 @@
 import FormSkill from '@app/components/form/form-skill'
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@app/components/ui/card'
+import { Card, CardContent, CardHeader, CardTitle } from '@app/components/ui/card'
 import { useAlert } from '@app/contexts/alert-context'
 import { useCreateSkillMutation, useGetSkillsQuery, useUpdateSkillMutation } from '@app/queries/skill'
 import { SkillType } from '@app/services/skill-service'
-import { loadIcons } from '@app/helpers/load-icons'
-import React, { useEffect, useState, ReactElement } from 'react'
+import React, { useState } from 'react'
 import { FaCode, FaEdit, FaTrash } from 'react-icons/fa'
 import { IoIosAdd } from 'react-icons/io'
 import { useQueryClient } from '@tanstack/react-query'
@@ -24,19 +23,6 @@ interface Skill {
 	experience: number
 	color: string
 	type: 'skill' | 'competence'
-}
-
-function DynamicIcon({ iconName, color, size = 40 }: { iconName: string, color: string, size?: number }) {
-	const [icon, setIcon] = useState<ReactElement | null>(null)
-	useEffect(() => {
-		let mounted = true
-		loadIcons(iconName, color).then((el) => {
-			if (mounted) setIcon(React.cloneElement(el, { size }))
-		}).catch(() => setIcon(null))
-		return () => { mounted = false }
-	}, [iconName, color, size])
-	if (!icon) return <span style={{ fontSize: size }}>💻</span>
-	return icon
 }
 
 export default function ConfigSkill() {
@@ -109,15 +95,18 @@ export default function ConfigSkill() {
 	if (isLoading) return <ConfigSkillSkeleton />
 
 	return (
-		<div className="min-h-full">
-			<PageHeader
-				title="Habilidades e Competências"
-				titleIcon={<FaCode size={24} className="text-cyan-400" />}
-				buttonText="Adicionar Habilidade"
-				buttonIcon={<IoIosAdd size={20} />}
-				onButtonClick={handleAddClick}
-			/>
-			<div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+		<div className="flex flex-col h-full min-h-0">
+			<div className="flex-shrink-0">
+				<PageHeader
+					title="Habilidades e Competências"
+					titleIcon={<FaCode size={24} className="text-cyan-400" />}
+					buttonText="Criar habilidade"
+					buttonIcon={<IoIosAdd size={20} />}
+					onButtonClick={handleAddClick}
+				/>
+			</div>
+			<div className="flex-1 min-h-0 overflow-y-auto overflow-x-hidden pr-1 scrollbar-thin scrollbar-track-transparent scrollbar-thumb-cyan-400/50 scrollbar-thumb-rounded-full">
+				<div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 grid-auto-rows-[minmax(220px,auto)] pb-4">
 				{skills &&
 					skills.map((skill: SkillType) => (
 						<Card
@@ -126,7 +115,7 @@ export default function ConfigSkill() {
 							className="
 								bg-[#070b14] border border-[#1e2a4a] hover:border-cyan-500/50 
 								transition-all duration-300 hover:shadow-lg hover:shadow-cyan-500/10 
-								cursor-pointer group overflow-hidden relative"
+								cursor-pointer group overflow-hidden relative h-full min-h-[220px] flex flex-col"
 						>
 							<div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-cyan-500 to-blue-600 transform origin-left scale-x-0 group-hover:scale-x-100 transition-transform duration-300"></div>
 
@@ -169,10 +158,6 @@ export default function ConfigSkill() {
 								</div>
 							</CardContent>
 
-							<CardFooter className="flex justify-center pt-0 pb-3">
-								<DynamicIcon iconName={skill.icon} color={skill.color || '#0ea5e9'} size={40} />
-							</CardFooter>
-
 							<div className="absolute top-2 right-2 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
 								<Button
 									size="sm"
@@ -195,15 +180,16 @@ export default function ConfigSkill() {
 					))}
 				<Card
 					onClick={handleAddClick}
-					className="bg-[#070b14] border border-dashed border-[#1e2a4a] hover:border-cyan-500/50 transition-all duration-300 flex items-center justify-center h-[180px] cursor-pointer group"
+					className="bg-[#070b14] border border-dashed border-[#1e2a4a] hover:border-cyan-500/50 transition-all duration-300 flex flex-col items-center justify-center min-h-[220px] h-full cursor-pointer group"
 				>
 					<div className="flex flex-col items-center justify-center gap-3 text-gray-500 group-hover:text-cyan-400 transition-colors">
 						<div className="w-12 h-12 rounded-full bg-[#0c1220] flex items-center justify-center group-hover:bg-cyan-500/10 transition-colors">
 							<IoIosAdd size={30} className="transition-transform group-hover:scale-110 duration-300" />
 						</div>
-						<p className="font-medium text-sm">Adicionar Habilidade</p>
+						<p className="font-medium text-sm">Criar habilidade</p>
 					</div>
 				</Card>
+				</div>
 			</div>
 
 			<Dialog open={isOpen} onOpenChange={setIsOpen}>
@@ -224,7 +210,7 @@ export default function ConfigSkill() {
 						<DialogTitle className="text-xl font-semibold text-cyan-400 flex items-center justify-between gap-2">
 							<div className="flex gap-2 items-center">
 								<FaCode size={18} />
-								{selectedSkill ? 'Editar Habilidade' : 'Adicionar Habilidade'}
+								{selectedSkill ? 'Editar Habilidade' : 'Criar habilidade'}
 							</div>
 							<IoClose className="cursor-pointer" onClick={() => setIsOpen(false)} />
 						</DialogTitle>

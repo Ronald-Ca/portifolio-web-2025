@@ -5,8 +5,9 @@ import { Button } from '../ui/button'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select'
 import { states } from '@app/utils/states'
 import { useEffect } from 'react'
+import { useCitiesByState } from '@app/hooks/use-cities-by-state'
 import { EducationType } from '@app/services/education-service'
-import { FaCalendarAlt, FaGraduationCap, FaMapMarkerAlt, FaSave, FaSpinner, FaUniversity } from 'react-icons/fa'
+import { FaCalendarAlt, FaMapMarkerAlt, FaSave, FaSpinner } from 'react-icons/fa'
 import { years } from '@app/utils/moths-and-years'
 import { modality } from '@app/utils/modality'
 import { MdSchool } from 'react-icons/md'
@@ -32,7 +33,9 @@ export default function FormEducation({ selectedEducation, handleSave, isSubmitt
         },
     })
 
-    const { reset, handleSubmit } = form
+    const { reset, handleSubmit, watch, setValue } = form
+    const stateValue = watch('state')
+    const { cities, isLoading: citiesLoading } = useCitiesByState(stateValue ?? '')
 
     useEffect(() => {
         const defaultFormValues: EducationType = {
@@ -48,6 +51,12 @@ export default function FormEducation({ selectedEducation, handleSave, isSubmitt
 
         reset(defaultFormValues)
     }, [selectedEducation, reset])
+
+    useEffect(() => {
+        if (!citiesLoading && selectedEducation?.city && stateValue === selectedEducation?.state) {
+            setValue('city', selectedEducation.city)
+        }
+    }, [citiesLoading, selectedEducation?.city, selectedEducation?.state, stateValue, setValue])
 
     const onSubmit = (data: EducationType) => {
         handleSave(data)
@@ -68,8 +77,7 @@ export default function FormEducation({ selectedEducation, handleSave, isSubmitt
                         rules={{ required: "O nome do curso é obrigatório" }}
                         render={({ field }) => (
                             <FormItem>
-                                <FormLabel className="text-gray-300 flex items-center gap-2">
-                                    <FaGraduationCap className="text-cyan-500/70" size={14} />
+                                <FormLabel className="text-gray-300">
                                     Nome do Curso
                                 </FormLabel>
                                 <FormControl>
@@ -90,8 +98,7 @@ export default function FormEducation({ selectedEducation, handleSave, isSubmitt
                         rules={{ required: "A instituição é obrigatória" }}
                         render={({ field }) => (
                             <FormItem>
-                                <FormLabel className="text-gray-300 flex items-center gap-2">
-                                    <FaUniversity className="text-cyan-500/70" size={14} />
+                                <FormLabel className="text-gray-300">
                                     Instituição
                                 </FormLabel>
                                 <FormControl>
@@ -210,38 +217,23 @@ export default function FormEducation({ selectedEducation, handleSave, isSubmitt
                         <h3 className="text-gray-300 font-medium">Localização</h3>
                     </div>
 
-                    <div className="grid grid-cols-3 gap-4">
-                        <div className="col-span-2">
-                            <FormField
-                                control={form.control}
-                                name="city"
-                                rules={{ required: "A cidade é obrigatória" }}
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel className="text-gray-300">Cidade</FormLabel>
-                                        <FormControl>
-                                            <Input
-                                                {...field}
-                                                placeholder="Cidade"
-                                                className="bg-[#070b14] border border-[#1e2a4a] focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 text-gray-100 rounded-md"
-                                            />
-                                        </FormControl>
-                                        <FormMessage className="text-red-400" />
-                                    </FormItem>
-                                )}
-                            />
-                        </div>
-
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 items-end">
                         <FormField
                             control={form.control}
                             name="state"
                             rules={{ required: "O estado é obrigatório" }}
                             render={({ field }) => (
-                                <FormItem>
+                                <FormItem className="min-w-0">
                                     <FormLabel className="text-gray-300">Estado</FormLabel>
                                     <FormControl>
-                                        <Select value={field.value} onValueChange={field.onChange}>
-                                            <SelectTrigger className="bg-[#070b14] border border-[#1e2a4a] focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 text-gray-100 rounded-md">
+                                        <Select
+                                            value={field.value}
+                                            onValueChange={(v) => {
+                                                field.onChange(v)
+                                                form.setValue('city', '')
+                                            }}
+                                        >
+                                            <SelectTrigger className="w-full bg-[#070b14] border border-[#1e2a4a] focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 text-gray-100 rounded-md">
                                                 <SelectValue placeholder="UF" />
                                             </SelectTrigger>
                                             <SelectContent className="bg-[#0c1220] border border-[#1e2a4a] text-gray-100 max-h-60">
@@ -251,7 +243,36 @@ export default function FormEducation({ selectedEducation, handleSave, isSubmitt
                                                         value={estado.sigla}
                                                         className="focus:bg-cyan-500/20 focus:text-cyan-50"
                                                     >
-                                                        {estado.sigla}
+                                                        {estado.sigla} - {estado.name}
+                                                    </SelectItem>
+                                                ))}
+                                            </SelectContent>
+                                        </Select>
+                                    </FormControl>
+                                    <FormMessage className="text-red-400" />
+                                </FormItem>
+                            )}
+                        />
+                        <FormField
+                            control={form.control}
+                            name="city"
+                            rules={{ required: "A cidade é obrigatória" }}
+                            render={({ field }) => (
+                                <FormItem className="min-w-0">
+                                    <FormLabel className="text-gray-300">Cidade</FormLabel>
+                                    <FormControl>
+                                        <Select
+                                            value={field.value}
+                                            onValueChange={field.onChange}
+                                            disabled={!stateValue || citiesLoading}
+                                        >
+                                            <SelectTrigger className="w-full bg-[#070b14] border border-[#1e2a4a] focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 text-gray-100 rounded-md data-[disabled]:bg-[#070b14] data-[disabled]:opacity-100 data-[disabled]:cursor-not-allowed">
+                                                <SelectValue placeholder={!stateValue ? "Selecione o estado primeiro" : citiesLoading ? "Carregando..." : "Selecione a cidade"} />
+                                            </SelectTrigger>
+                                            <SelectContent className="bg-[#0c1220] border border-[#1e2a4a] text-gray-100 max-h-60">
+                                                {cities.map((c) => (
+                                                    <SelectItem key={c.id} value={c.name} className="focus:bg-cyan-500/20 focus:text-cyan-50">
+                                                        {c.name}
                                                     </SelectItem>
                                                 ))}
                                             </SelectContent>

@@ -81,6 +81,8 @@ export default function ConfigCurriculum() {
 	if (isLoading) return <ConfigCurriculumSkeleton />
 
 	return (
+		<div className="flex flex-col h-full min-h-0">
+		<div className="flex-1 min-h-0 overflow-y-auto overflow-x-hidden pr-1 scrollbar-thin scrollbar-track-transparent scrollbar-thumb-cyan-400/50 scrollbar-thumb-rounded-full">
 		<div className="min-h-full flex flex-col items-center justify-center py-8 px-2">
 			<Card className="bg-[#0c1220] border border-[#1e2a4a] shadow-lg w-full max-w-2xl">
 				<CardHeader className="pb-2 flex flex-col items-center">
@@ -149,6 +151,8 @@ export default function ConfigCurriculum() {
 					)}
 				</CardContent>
 			</Card>
+			</div>
+		</div>
 		</div>
 	)
 }

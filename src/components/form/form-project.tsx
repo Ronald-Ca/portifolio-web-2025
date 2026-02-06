@@ -1,24 +1,21 @@
-
-import { useGetSkillsQuery } from '../../queries/skill'
 import { ProjectType } from '../../services/project-service'
 import { useRef, useState } from 'react'
+import { FaSpinner } from 'react-icons/fa'
 import { FormProvider, useForm } from 'react-hook-form'
 import { FormControl, FormField, FormItem, FormLabel } from '../ui/form'
 import { Input } from '../ui/input'
 import { Textarea } from '../ui/textarea'
-import { DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '../ui/dropdown-menu'
 import { Button } from '../ui/button'
-import { Badge } from '../ui/badge'
-import { ScrollArea } from '@radix-ui/react-scroll-area'
-import { FaSpinner } from 'react-icons/fa'
+import { SkillsMultiSelect } from '@app/components/common/skills-multi-select'
 
 interface ProjectFormProps {
 	selectedProject?: ProjectType
 	handleSave: (project: ProjectType) => void
 	isSubmitting?: boolean
+	onOpenCreateSkill?: () => void
 }
 
-export function FormProject({ selectedProject, handleSave, isSubmitting }: ProjectFormProps) {
+export function FormProject({ selectedProject, handleSave, isSubmitting, onOpenCreateSkill }: ProjectFormProps) {
 	const form = useForm({
 		defaultValues: {
 			name: selectedProject?.name || '',
@@ -32,11 +29,8 @@ export function FormProject({ selectedProject, handleSave, isSubmitting }: Proje
 
 	const [imagePreview, setImagePreview] = useState<string | null>(typeof selectedProject?.image === 'string' ? selectedProject.image : null)
 	const [videoPreview, setVideoPreview] = useState<string | null>(typeof selectedProject?.video === 'string' ? selectedProject.video : null)
-	const [skillsId, setSkillsId] = useState<string[]>(Array.isArray(selectedProject?.projectSkills) ? selectedProject.projectSkills.map((skill) => skill.id).filter((id): id is string => !!id) : [])
 	const fileInputRef = useRef<HTMLInputElement | null>(null)
 	const videoInputRef = useRef<HTMLInputElement | null>(null)
-
-	const { data: skills } = useGetSkillsQuery()
 
 	const handleFileChange = (
 		event: React.ChangeEvent<HTMLInputElement>,
@@ -56,6 +50,7 @@ export function FormProject({ selectedProject, handleSave, isSubmitting }: Proje
 	}
 
 	const onSubmit = (data: { name: string; image: string | File; video: string | File; description: string; link: string; skillsId: (string | undefined)[] }) => {
+		const skillIds = (data.skillsId ?? []).filter((id): id is string => !!id)
 		const newProject: ProjectType = {
 			id: selectedProject?.id,
 			name: data.name,
@@ -63,7 +58,7 @@ export function FormProject({ selectedProject, handleSave, isSubmitting }: Proje
 			video: data.video,
 			description: data.description,
 			link: data.link,
-			projectSkills: skillsId.map((id) => ({ id })),
+			projectSkills: skillIds.map((id) => ({ id })),
 		}
 		handleSave(newProject)
 	}
@@ -122,119 +117,19 @@ export function FormProject({ selectedProject, handleSave, isSubmitting }: Proje
 				<FormField
 					control={form.control}
 					name='skillsId'
-					render={({ field }) => {
-						const [isOpen, setIsOpen] = useState(false)
-						const selectedSkills: string[] = (field.value || []).filter((id): id is string => !!id)
-						const handleToggle = () => setIsOpen((prev) => !prev)
-						const handleClose = () => setIsOpen(false)
-						const handleSkillChange = (skillId: string, checked: boolean) => {
-							const newValue = checked
-								? [...selectedSkills, skillId]
-								: selectedSkills.filter((id) => id !== skillId)
-							field.onChange(newValue)
-							setSkillsId(newValue.filter((id): id is string => !!id))
-							form.setValue('skillsId', newValue)
-						}
-						const getSkillName = (skillId: string) => {
-							const skill = skills?.find((s) => s.id === skillId)
-							return skill?.name || skillId
-						}
-						return (
-							<FormItem className="flex flex-col">
-								<FormLabel className='text-gray-300'>Skills</FormLabel>
-								<div className="flex flex-col gap-3">
-									<FormControl>
-										<DropdownMenu open={isOpen} onOpenChange={setIsOpen}>
-											<DropdownMenuTrigger asChild>
-												<Button
-													variant='outline'
-													className='w-full bg-[#070b14] border border-[#1e2a4a] focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 text-gray-100 rounded-md justify-between'
-													onClick={(e) => {
-														e.preventDefault()
-														handleToggle()
-													}}
-												>
-													<span>
-														{selectedSkills.length > 0
-															? `${selectedSkills.length} skill${selectedSkills.length > 1 ? "s" : ""} selecionada${selectedSkills.length > 1 ? "s" : ""}`
-															: "Selecionar skills"}
-													</span>
-													<span className="text-gray-400">▼</span>
-												</Button>
-											</DropdownMenuTrigger>
-											<DropdownMenuContent
-												className="w-[300px] bg-[#0c1220] border border-[#1e2a4a] text-gray-100 rounded-md shadow-lg shadow-black/20"
-												onClick={(e) => e.stopPropagation()}
-												onPointerDownOutside={(e) => {
-													e.preventDefault()
-													handleClose()
-												}}
-											>
-												<DropdownMenuLabel className="text-cyan-400 font-medium border-b border-[#1e2a4a] pb-2">
-													Selecione as Skills
-												</DropdownMenuLabel>
-												<DropdownMenuSeparator />
-												<ScrollArea className="h-[200px]">
-													{!skills ? (
-														<div className="flex justify-center items-center h-20">
-															<FaSpinner className="animate-spin text-cyan-500" />
-														</div>
-													) : (
-														skills?.map((skill) => {
-															if (!skill.id) return null
-															const isChecked = field.value?.includes(skill.id) ?? false
-															return (
-																<DropdownMenuCheckboxItem
-																	key={skill.id}
-																	checked={isChecked}
-																	className="focus:bg-cyan-500/20 focus:text-cyan-50 cursor-pointer"
-																	onCheckedChange={(checked) => {
-																		handleSkillChange(skill.id as string, checked)
-																	}}
-																>
-																	{skill.name}
-																</DropdownMenuCheckboxItem>
-															)
-														})
-													)}
-												</ScrollArea>
-											</DropdownMenuContent>
-										</DropdownMenu>
-									</FormControl>
-									{selectedSkills.length > 0 && (
-										<div className="flex flex-wrap gap-2 mt-2">
-											{selectedSkills.map((skillId) => {
-												if (!skillId) return null;
-												return (
-													<Badge
-														key={skillId}
-														variant="outline"
-														className="bg-cyan-500/10 text-cyan-400 border-cyan-500/30 flex items-center gap-1 pl-2 pr-1 py-1"
-													>
-														{getSkillName(skillId)}
-														<Button
-															variant="ghost"
-															size="sm"
-															className="h-4 w-4 p-0 text-cyan-400 hover:text-cyan-100 hover:bg-transparent"
-															onClick={(e) => {
-																e.preventDefault()
-																const newValue = selectedSkills.filter((id) => id !== skillId)
-																field.onChange(newValue)
-																setSkillsId(newValue.filter((id): id is string => !!id))
-																form.setValue('skillsId', newValue)
-															}}
-														>
-															×
-														</Button>
-													</Badge>
-												)
-											})}
-										</div>
-									)}
-								</div>
-							</FormItem>
-						)
-					}}
+					render={({ field }) => (
+						<FormItem className="flex flex-col">
+							<FormControl>
+								<SkillsMultiSelect
+									label="Stacks"
+									value={(field.value ?? []).filter((id): id is string => !!id)}
+									onChange={(v) => field.onChange(v)}
+									showCreateButton={!!onOpenCreateSkill}
+									onCreateClick={onOpenCreateSkill}
+								/>
+							</FormControl>
+						</FormItem>
+					)}
 				/>
 				<FormItem>
 					<FormLabel className='text-gray-300'>Imagem</FormLabel>
