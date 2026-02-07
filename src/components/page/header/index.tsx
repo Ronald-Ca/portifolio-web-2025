@@ -4,6 +4,7 @@ import { MdOutlineContactMail } from 'react-icons/md';
 import { IoMdLogIn } from 'react-icons/io';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from '@app/components/ui/tooltip';
+import newLogo from '@app/public/logo.png';
 
 export default function Header() {
   const navigate = useNavigate()
@@ -17,16 +18,16 @@ export default function Header() {
 
   return (
     <header className="
-      w-full flex justify-between items-center 
+      w-full flex justify-between items-center overflow-visible
       bg-gradient-to-r from-slate-900 to-slate-800
       px-8 py-4 border-b border-slate-700 fixed top-0 z-40"
     >
 
       <img 
-      src='./src/assets/logo.png' 
-      alt='logo' 
-      className='w-10 h-10 object-cover rounded cursor-pointer hover:scale-110 transition-transform duration-300'
-      onClick={() => navigate('/')}
+        src={newLogo} 
+        alt='Ronald - Desenvolvedor Full Stack' 
+        className='h-20 -my-3 w-auto max-w-[320px] object-contain cursor-pointer hover:scale-105 transition-transform duration-300'
+        onClick={() => navigate('/')}
       />
 
       <nav className="flex gap-4">
