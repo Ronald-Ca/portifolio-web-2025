@@ -56,14 +56,14 @@ export function SkillsMultiSelect({
 	return (
 		<div className={className}>
 			{(label || (showCreateButton && onCreateClick)) && (
-				<div className="flex items-center justify-between gap-2 mb-2">
-					{label ? <span className="text-gray-300 font-medium">{label}</span> : <span />}
+				<div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between sm:gap-2 mb-2">
+					{label ? <span className="text-gray-300 font-medium text-sm sm:text-base">{label}</span> : <span />}
 					{showCreateButton && onCreateClick && (
 						<Button
 							type="button"
 							variant="outline"
 							size="sm"
-							className="bg-[#070b14] border-[#1e2a4a] text-cyan-400 hover:bg-cyan-500/10 hover:text-cyan-300"
+							className="w-full sm:w-auto shrink-0 bg-[#070b14] border-[#1e2a4a] text-cyan-400 hover:bg-cyan-500/10 hover:text-cyan-300"
 							onClick={onCreateClick}
 						>
 							Criar habilidade
@@ -87,7 +87,8 @@ export function SkillsMultiSelect({
 						</Button>
 					</DropdownMenuTrigger>
 					<DropdownMenuContent
-						className="w-[300px] bg-[#0c1220] border border-[#1e2a4a] text-gray-100 rounded-md"
+						className="w-[min(calc(100vw-2rem),22rem)] sm:w-[300px] max-h-[min(60vh,320px)] overflow-y-auto bg-[#0c1220] border border-[#1e2a4a] text-gray-100 rounded-md"
+						align="start"
 					>
 						<DropdownMenuLabel className="text-cyan-400 font-medium pb-2">
 							{dropdownLabel}

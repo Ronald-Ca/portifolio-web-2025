@@ -67,18 +67,21 @@ export default function ConfigSocialMedia() {
 
 	return (
 		<div className="flex flex-col h-full min-h-0">
-			<div className="flex-shrink-0 mb-6 flex items-center justify-between">
-				<h2 className="text-2xl font-bold text-cyan-400 flex items-center gap-2">
-					<span className="bg-cyan-500/10 p-2 rounded-md">
-						<FaEdit className="text-cyan-400" size={24} />
+			<div className="flex-shrink-0 mb-4 sm:mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
+				<h2 className="text-lg sm:text-xl md:text-2xl font-bold text-cyan-400 flex items-center gap-2 min-w-0">
+					<span className="bg-cyan-500/10 p-1.5 sm:p-2 rounded-md shrink-0 inline-flex items-center justify-center">
+						<FaEdit className="text-cyan-400 w-5 h-5 sm:w-6 sm:h-6" />
 					</span>
-					Redes Sociais
+					<span className="leading-tight">Redes Sociais</span>
 				</h2>
 				<Button
 					onClick={handleAddClick}
-					className="bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 text-white"
+					className="
+						w-full sm:w-auto shrink-0 justify-center text-sm sm:text-base
+						bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 text-white
+					"
 				>
-					<IoIosAdd size={20} className="mr-1" /> Adicionar Rede Social
+					<IoIosAdd size={20} className="mr-1 shrink-0" /> Adicionar Rede Social
 				</Button>
 			</div>
 			<div className="flex-1 min-h-0 overflow-y-auto overflow-x-hidden pr-1 scrollbar-thin scrollbar-track-transparent scrollbar-thumb-cyan-400/50 scrollbar-thumb-rounded-full">

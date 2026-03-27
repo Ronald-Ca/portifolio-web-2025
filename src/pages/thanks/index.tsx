@@ -2,20 +2,32 @@ import { Card, CardContent, CardHeader, CardTitle } from "@app/components/ui/car
 import { FaReact, FaNodeJs, FaDatabase, FaRobot, FaGithub, FaRegStar } from "react-icons/fa";
 import { SiTypescript, SiTailwindcss, SiVercel, SiPrisma, SiExpress, SiZod, SiShadcnui, SiOpenai } from "react-icons/si";
 import { MdPeopleAlt } from "react-icons/md";
+import { IoChevronBack } from "react-icons/io5";
 import { useNavigate } from "react-router-dom";
+import Header from "@app/components/page/header";
+import Footer from "@app/components/page/footer";
 
 export default function Thanks() {
   const navigate = useNavigate();
   return (
-    <div className="min-h-screen w-full flex flex-col items-center justify-center bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-slate-800 via-slate-900 to-black p-4">
+    <div className="min-h-screen flex flex-col bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-slate-800 via-slate-900 to-black">
+      <Header />
+      <main className="relative flex-1 flex flex-col">
       <div className="absolute inset-0 bg-grid-white/[0.02] pointer-events-none" />
-      <div className="w-full max-w-6xl relative z-10 flex flex-col items-center justify-center">
-        <div className="flex justify-center w-full mb-6">
+      <div className="w-full max-w-6xl mx-auto relative z-10 flex flex-col flex-1 px-3 sm:px-4 md:px-6 pt-4 md:pt-6 pb-10 md:pb-12">
+        <div className="flex justify-start w-full mb-4 md:mb-6">
           <button
+            type="button"
+            aria-label="Voltar para a página principal"
             onClick={() => navigate("/")}
-            className="px-6 py-2 rounded-lg bg-default text-white font-semibold shadow hover:bg-sky-700 transition-colors duration-200"
+            className="
+              inline-flex items-center gap-1.5 rounded-lg border border-default/60 bg-slate-900/70
+              px-3 py-2 text-sm font-semibold text-default shadow-sm
+              hover:bg-default/15 hover:border-default transition-colors duration-200
+            "
           >
-            Voltar para a página principal
+            <IoChevronBack className="h-5 w-5 shrink-0" aria-hidden />
+            Voltar
           </button>
         </div>
         <Card className="border-slate-800 bg-gradient-to-b from-slate-900 to-slate-950 shadow-2xl shadow-cyan-500/10 mb-8">
@@ -129,15 +141,9 @@ export default function Thanks() {
             </CardContent>
           </Card>
         </div>
-        <div className="flex justify-center mt-10">
-          <button
-            onClick={() => navigate("/")}
-            className="px-6 py-2 rounded-lg bg-default text-white font-semibold shadow hover:bg-sky-700 transition-colors duration-200"
-          >
-            Voltar para a página principal
-          </button>
-        </div>
       </div>
+      </main>
+      <Footer />
     </div>
   );
 } 

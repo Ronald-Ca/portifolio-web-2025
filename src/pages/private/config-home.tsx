@@ -147,22 +147,22 @@ export default function ConfigHome() {
 		<FormProvider {...formMethods}>
 			<div className="flex flex-col h-full min-h-0 overflow-hidden">
 			<div className="flex-1 min-h-0 overflow-y-auto overflow-x-hidden pr-1 scrollbar-thin scrollbar-track-transparent scrollbar-thumb-cyan-400/50 scrollbar-thumb-rounded-full">
-			<div className="min-h-full flex flex-col items-center py-4">
-				<div className="w-full max-w-3xl">
-					<h2 className="text-2xl font-bold text-cyan-400 mb-6 flex items-center gap-2">
-						<span className="bg-cyan-500/10 p-2 rounded-md">
-							<IoMdColorPalette className="text-cyan-400" size={24} />
+			<div className="min-h-full flex flex-col items-center py-3 sm:py-4">
+				<div className="w-full max-w-3xl px-0 sm:px-0">
+					<h2 className="text-lg sm:text-xl md:text-2xl font-bold text-cyan-400 mb-4 sm:mb-6 flex items-start sm:items-center gap-2 leading-tight">
+						<span className="bg-cyan-500/10 p-1.5 sm:p-2 rounded-md shrink-0 mt-0.5 sm:mt-0">
+							<IoMdColorPalette className="text-cyan-400" size={22} />
 						</span>
-						Configuração da Página Inicial
+						<span className="min-w-0">Configuração da Página Inicial</span>
 					</h2>
 
 					<Card className="bg-[#070b14] border border-[#1e2a4a] shadow-lg overflow-hidden">
-						<CardContent className="p-6">
-							<div className="flex flex-col gap-8">
+						<CardContent className="p-4 sm:p-6">
+							<div className="flex flex-col gap-6 sm:gap-8">
 								<div className="flex flex-col items-center">
 									<div className="relative group">
 										{imagePreview ? (
-											<div className="relative w-48 h-48 rounded-full overflow-hidden border-4 border-cyan-500/30 shadow-lg shadow-cyan-500/20">
+											<div className="relative w-36 h-36 sm:w-44 sm:h-44 md:w-48 md:h-48 rounded-full overflow-hidden border-4 border-cyan-500/30 shadow-lg shadow-cyan-500/20">
 												<img
 													src={imagePreview || "/placeholder.svg"}
 													alt="Preview"
@@ -170,7 +170,7 @@ export default function ConfigHome() {
 												/>
 											</div>
 										) : (
-											<div className="w-48 h-48 flex items-center justify-center bg-gradient-to-br from-[#111827] to-[#0c1a2c] rounded-full border-4 border-dashed border-[#1e2a4a]">
+											<div className="w-36 h-36 sm:w-44 sm:h-44 md:w-48 md:h-48 flex items-center justify-center bg-gradient-to-br from-[#111827] to-[#0c1a2c] rounded-full border-4 border-dashed border-[#1e2a4a] px-2 text-center">
 												<span className="text-gray-400 text-sm">Sem imagem de perfil</span>
 											</div>
 										)}
@@ -199,7 +199,7 @@ export default function ConfigHome() {
 										Imagem de Fundo
 									</h3>
 									<div
-										className="relative w-full h-56 rounded-lg overflow-hidden cursor-pointer group border border-[#1e2a4a] shadow-md"
+										className="relative w-full h-40 sm:h-48 md:h-56 rounded-lg overflow-hidden cursor-pointer group border border-[#1e2a4a] shadow-md"
 										onClick={handleBgImageClick}
 									>
 										{bgImagePreview ? (
@@ -251,7 +251,7 @@ export default function ConfigHome() {
 										<span className="h-1 w-1 rounded-full bg-cyan-400"></span>
 										Informações Pessoais
 									</h3>
-									<div className="bg-[#0c1220] rounded-lg p-5 border border-[#1e2a4a]">
+									<div className="bg-[#0c1220] rounded-lg p-4 sm:p-5 border border-[#1e2a4a]">
 										<FormHome onSubmit={onSubmit} isSubmitting={isMutating} />
 									</div>
 								</div>

@@ -131,20 +131,21 @@ export default function ConfigExperience() {
 
 	return (
 		<div className="flex flex-col h-full min-h-0">
-			<div className="flex-shrink-0 mb-6 flex items-center justify-between flex-wrap gap-2">
-				<h2 className="text-2xl font-bold text-cyan-400 flex items-center gap-2">
-					<span className="bg-cyan-500/10 p-2 rounded-md">
-						<FaBriefcase className="text-cyan-400" size={24} />
+			<div className="mb-4 flex flex-shrink-0 flex-col gap-3 sm:mb-6 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
+				<h2 className="flex min-w-0 items-center gap-2 text-lg font-bold text-cyan-400 sm:text-xl md:text-2xl">
+					<span className="shrink-0 rounded-md bg-cyan-500/10 p-1.5 sm:p-2">
+						<FaBriefcase className="text-cyan-400 text-lg sm:text-2xl" />
 					</span>
-					Experiência Profissional
+					<span className="leading-tight">Experiência Profissional</span>
 				</h2>
 				<Button
 					onClick={handleAddClick}
 					className="
-						bg-gradient-to-r from-cyan-500 to-blue-600 
+						w-full shrink-0 justify-center text-sm sm:w-auto sm:text-base
+						bg-gradient-to-r from-cyan-500 to-blue-600
 						hover:from-cyan-600 hover:to-blue-700 text-white"
 				>
-					<IoIosAdd size={20} className="mr-1" />
+					<IoIosAdd size={20} className="mr-1 shrink-0" />
 					Adicionar Experiência
 				</Button>
 			</div>

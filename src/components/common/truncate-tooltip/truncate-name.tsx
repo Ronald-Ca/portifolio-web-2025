@@ -17,6 +17,8 @@ interface TruncatedNameProps {
     tooltipSide?: "top" | "right" | "bottom" | "left"
     tooltipAlign?: "start" | "center" | "end"
     showIcon?: boolean
+    /** Uma linha com reticências conforme o espaço (CSS); ignora maxLength no texto exibido */
+    cssTruncate?: boolean
 }
 
 export const TruncatedName: React.FC<TruncatedNameProps> = ({
@@ -26,22 +28,32 @@ export const TruncatedName: React.FC<TruncatedNameProps> = ({
     tooltipSide = "top",
     tooltipAlign = "center",
     showIcon = true,
+    cssTruncate = false,
 }) => {
-    const truncated = truncateName(name, maxLength)
-    const isTruncated = truncated !== name
+    const truncated = cssTruncate ? name : truncateName(name, maxLength)
+    const isCharTruncated = !cssTruncate && truncated !== name
+    const showTooltip = name.length > 0 && (cssTruncate || isCharTruncated)
 
     return (
         <TooltipProvider>
             <Tooltip delayDuration={300}>
                 <TooltipTrigger asChild>
-                    <span className={cn("inline-flex items-center gap-1 relative", isTruncated && "cursor-help", className)}>
-                        {truncated}
-                        {isTruncated && showIcon && (
+                    <span
+                        className={cn(
+                            cssTruncate
+                                ? "block min-w-0 max-w-full truncate"
+                                : "inline-flex items-center gap-1 relative",
+                            showTooltip && "cursor-help",
+                            className
+                        )}
+                    >
+                        {cssTruncate ? name : truncated}
+                        {isCharTruncated && showIcon && (
                             <span className="inline-flex w-1.5 h-1.5 bg-cyan-500 rounded-full opacity-70" />
                         )}
                     </span>
                 </TooltipTrigger>
-                {isTruncated && (
+                {showTooltip && (
                     <TooltipContent
                         side={tooltipSide}
                         align={tooltipAlign}
@@ -50,7 +62,7 @@ export const TruncatedName: React.FC<TruncatedNameProps> = ({
                     >
                         <motion.div initial={{ opacity: 0, y: -5 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.2 }}>
                             <div className="font-medium text-cyan-400 mb-1 text-sm">Nome completo:</div>
-                            <div className="text-gray-100">{name}</div>
+                            <div className="text-gray-100 break-words">{name}</div>
                         </motion.div>
                     </TooltipContent>
                 )}

@@ -99,14 +99,14 @@ export default function ConfigSkill() {
 			<div className="flex-shrink-0">
 				<PageHeader
 					title="Habilidades e Competências"
-					titleIcon={<FaCode size={24} className="text-cyan-400" />}
+					titleIcon={<FaCode className="text-cyan-400 w-5 h-5 sm:w-6 sm:h-6 shrink-0" />}
 					buttonText="Criar habilidade"
 					buttonIcon={<IoIosAdd size={20} />}
 					onButtonClick={handleAddClick}
 				/>
 			</div>
 			<div className="flex-1 min-h-0 overflow-y-auto overflow-x-hidden pr-1 scrollbar-thin scrollbar-track-transparent scrollbar-thumb-cyan-400/50 scrollbar-thumb-rounded-full">
-				<div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 grid-auto-rows-[minmax(220px,auto)] pb-4">
+				<div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 grid-auto-rows-[minmax(220px,auto)] pb-4">
 				{skills &&
 					skills.map((skill: SkillType) => (
 						<Card

@@ -1,6 +1,6 @@
 import { Button } from '../../../components/ui/button'
 import CurriculumService from '../../../services/curriculum-service'
-import { IoMdCodeDownload } from 'react-icons/io'
+import { FiDownload } from 'react-icons/fi'
 
 interface ButtonCurriculumProps {
 	id?: string
@@ -20,8 +20,11 @@ export function ButtonCurriculum({ id }: ButtonCurriculumProps) {
 	}
 
 	return (
-		<Button onClick={downloadCurriculum} className='w-[200px] hover:bg-[#00BFFF] hover:text-slate-900 flex gap-[5px] font-bold'>
-			DOWNLOAD CV <IoMdCodeDownload size={25} />
+		<Button
+			onClick={downloadCurriculum}
+			className='w-full sm:w-[240px] bg-default text-slate-950 border border-default shadow-lg shadow-default/20 hover:bg-default/90 flex gap-2 font-bold justify-center'
+		>
+			DOWNLOAD CV <FiDownload size={22} />
 		</Button>
 	)
 }

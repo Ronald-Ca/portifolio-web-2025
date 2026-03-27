@@ -21,7 +21,7 @@ export const Education: React.FC<EducationProps> = ({ education }) => {
   return (
   <Card className="bg-slate-900/50 border-cyan-500/50 text-white">
     <CardHeader>
-      <h2 className="text-3xl font-bold text-center text-cyan-400">Formação Acadêmica</h2>
+      <h2 className="text-2xl sm:text-3xl font-bold text-center text-cyan-400">Formação Acadêmica</h2>
     </CardHeader>
     <CardContent>
       <div className="grid grid-cols-1 gap-6">

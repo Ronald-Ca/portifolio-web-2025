@@ -86,20 +86,21 @@ export default function ConfigEducation() {
 
     return (
         <div className="flex flex-col h-full min-h-0 overflow-hidden">
-            <div className="flex-shrink-0 mb-6 flex items-center justify-between">
-                <h2 className="text-2xl font-bold text-cyan-400 flex items-center gap-2">
-                    <span className="bg-cyan-500/10 p-2 rounded-md">
-                        <FaGraduationCap className="text-cyan-400" size={24} />
+            <div className="flex-shrink-0 mb-4 sm:mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
+                <h2 className="text-lg sm:text-xl md:text-2xl font-bold text-cyan-400 flex items-center gap-2 min-w-0">
+                    <span className="bg-cyan-500/10 p-1.5 sm:p-2 rounded-md shrink-0">
+                        <FaGraduationCap className="text-cyan-400 text-lg sm:text-2xl" />
                     </span>
-                    Formação Acadêmica
+                    <span className="leading-tight">Formação Acadêmica</span>
                 </h2>
                 <Button
                     onClick={handleAddClick}
                     className="
+                    w-full sm:w-auto shrink-0 justify-center
                     bg-gradient-to-r from-cyan-500 to-blue-600 
-                    hover:from-cyan-600 hover:to-blue-700 text-white"
+                    hover:from-cyan-600 hover:to-blue-700 text-white text-sm sm:text-base"
                 >
-                    <IoIosAdd size={20} className="mr-1" /> Adicionar Formação
+                    <IoIosAdd size={20} className="mr-1 shrink-0" /> Adicionar Formação
                 </Button>
             </div>
             <div className="flex-1 min-h-0 overflow-y-auto overflow-x-hidden pr-1 scrollbar-thin scrollbar-track-transparent scrollbar-thumb-cyan-400/50 scrollbar-thumb-rounded-full">
@@ -112,7 +113,7 @@ export default function ConfigEducation() {
                             className="
                             bg-[#070b14] border border-[#1e2a4a] hover:border-cyan-500/50 
                             transition-all duration-300 hover:shadow-lg hover:shadow-cyan-500/10 
-                            cursor-pointer group overflow-hidden"
+                            cursor-pointer group overflow-hidden min-w-0 relative"
                         >
                             <div className="
                                     absolute top-0 left-0 w-full h-1 bg-gradient-to-r 
@@ -131,23 +132,32 @@ export default function ConfigEducation() {
                                 </CardTitle>
                             </CardHeader>
 
-                            <CardContent>
-                                <div className="space-y-2 text-gray-400">
-                                    <p className="flex items-center gap-2">
-                                        <span className="text-cyan-500/70">Instituição:</span>
-                                        <TruncatedName
-                                            name={education.institution}
-                                            maxLength={35}
-                                            tooltipSide="right"
-                                            className="text-gray-300 hover:text-gray-100 transition-colors"
-                                        />
+                            <CardContent className="min-w-0">
+                                <div className="space-y-2 text-gray-400 min-w-0">
+                                    <p className="flex min-w-0 items-center gap-2">
+                                        <span className="shrink-0 text-cyan-500/70">Instituição:</span>
+                                        <span className="min-w-0 flex-1">
+                                            <TruncatedName
+                                                name={education.institution}
+                                                maxLength={35}
+                                                cssTruncate
+                                                showIcon={false}
+                                                tooltipSide="right"
+                                                className="text-gray-300 transition-colors hover:text-gray-100"
+                                            />
+                                        </span>
                                     </p>
-                                    <p className="flex items-center gap-2">
-                                        <span className="text-cyan-500/70">Período:</span> {education.yearInit} -{" "}
-                                        {education.yearFinal || "Atual"}
+                                    <p className="flex min-w-0 items-center gap-2">
+                                        <span className="shrink-0 text-cyan-500/70">Período:</span>
+                                        <span className="min-w-0 truncate text-gray-300">
+                                            {education.yearInit} - {education.yearFinal || "Atual"}
+                                        </span>
                                     </p>
-                                    <p className="flex items-center gap-2">
-                                        <span className="text-cyan-500/70">Local:</span> {education.city}, {education.state}
+                                    <p className="flex min-w-0 items-center gap-2">
+                                        <span className="shrink-0 text-cyan-500/70">Local:</span>
+                                        <span className="min-w-0 truncate text-gray-300">
+                                            {education.city}, {education.state}
+                                        </span>
                                     </p>
                                     {education.modality && (
                                         <Badge variant="outline" className="bg-cyan-500/10 text-cyan-400 border-cyan-500/30">
@@ -205,13 +215,15 @@ export default function ConfigEducation() {
             <Dialog open={isOpen} onOpenChange={setIsOpen}>
                 <DialogContent className="
                 fixed top-1/2 left-1/2 
-                p-4 rounded-lg
+                w-[calc(100vw-1rem)] sm:w-full sm:max-w-[820px]
+                max-h-[90dvh] overflow-y-auto
+                p-3 sm:p-4 rounded-lg
                 transform -translate-x-1/2 -translate-y-1/2 
                 bg-[#0c1220] border-dashed  border-2 border-[#1e2a4a] 
-                text-gray-100 w-5w">
+                text-gray-100">
                     <DialogHeader>
                         <DialogTitle className="
-                            text-xl font-semibold text-cyan-400 
+                            text-lg sm:text-xl font-semibold text-cyan-400 
                             flex items-center justify-between gap-2"
                         >
                             <div className='flex gap-2 items-center'>
@@ -229,10 +241,12 @@ export default function ConfigEducation() {
             <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
                 <AlertDialogContent className="
                 fixed top-1/2 left-1/2 
-                p-4 rounded-lg
+                w-[calc(100vw-1rem)] sm:w-full sm:max-w-[600px]
+                max-h-[90dvh] overflow-y-auto
+                p-3 sm:p-4 rounded-lg
                 transform -translate-x-1/2 -translate-y-1/2 
                 bg-[#0c1220] border-dashed  border-2 border-[#1e2a4a] 
-                text-gray-100 sm:max-w-[600px]
+                text-gray-100
                 ">
                     <AlertDialogHeader>
                         <AlertDialogTitle className="text-red-400 font-semibold text-xl">Confirmar exclusão</AlertDialogTitle>

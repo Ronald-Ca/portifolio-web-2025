@@ -1,4 +1,4 @@
-import { memo, type ReactElement } from "react"
+import { memo, type ReactElement, useState } from "react"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@radix-ui/react-tooltip"
 import type { IconType } from "react-icons"
 import { motion } from "framer-motion"
@@ -14,10 +14,12 @@ interface DynamicTechIconProps {
 }
 
 export const TechIcon = memo(function TechIcon({ label, Icon }: TechIconProps) {
+    const [open, setOpen] = useState(false)
     return (
-        <Tooltip>
+        <Tooltip open={open} onOpenChange={setOpen}>
             <TooltipTrigger asChild>
-                <motion.div
+                <motion.button
+                    type="button"
                     className="
                     p-3.5 rounded-xl
                     bg-gradient-to-br from-bg_component/90 to-bg_component/70
@@ -36,9 +38,10 @@ export const TechIcon = memo(function TechIcon({ label, Icon }: TechIconProps) {
                         transition: { duration: 0.2 },
                     }}
                     whileTap={{ scale: 0.95 }}
+                    onClick={() => setOpen(prev => !prev)}
                 >
                     <Icon size={30} />
-                </motion.div>
+                </motion.button>
             </TooltipTrigger>
 
             <TooltipContent
@@ -68,10 +71,12 @@ export const TechIcon = memo(function TechIcon({ label, Icon }: TechIconProps) {
 })
 
 export const DynamicTechIcon = memo(function DynamicTechIcon({ label, icon }: DynamicTechIconProps) {
+    const [open, setOpen] = useState(false)
     return (
-        <Tooltip>
+        <Tooltip open={open} onOpenChange={setOpen}>
             <TooltipTrigger asChild>
-                <motion.div
+                <motion.button
+                    type="button"
                     className="
                     p-3.5 rounded-xl
                     bg-gradient-to-br from-bg_component/90 to-bg_component/70
@@ -88,9 +93,10 @@ export const DynamicTechIcon = memo(function DynamicTechIcon({ label, icon }: Dy
                         transition: { duration: 0.2 },
                     }}
                     whileTap={{ scale: 0.95 }}
+                    onClick={() => setOpen(prev => !prev)}
                 >
                     {icon}
-                </motion.div>
+                </motion.button>
             </TooltipTrigger>
 
             <TooltipContent

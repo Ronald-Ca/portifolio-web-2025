@@ -83,28 +83,28 @@ export default function ConfigCurriculum() {
 	return (
 		<div className="flex flex-col h-full min-h-0">
 		<div className="flex-1 min-h-0 overflow-y-auto overflow-x-hidden pr-1 scrollbar-thin scrollbar-track-transparent scrollbar-thumb-cyan-400/50 scrollbar-thumb-rounded-full">
-		<div className="min-h-full flex flex-col items-center justify-center py-8 px-2">
+		<div className="min-h-full flex flex-col items-center justify-start sm:justify-center py-4 sm:py-8 px-3 sm:px-4">
 			<Card className="bg-[#0c1220] border border-[#1e2a4a] shadow-lg w-full max-w-2xl">
-				<CardHeader className="pb-2 flex flex-col items-center">
-					<CardTitle className="text-2xl font-bold text-cyan-400 flex items-center gap-3">
-						<span className="bg-cyan-500/10 p-2 rounded-md">
-							<FaFilePdf className="text-cyan-400" size={24} />
+				<CardHeader className="pb-2 flex flex-col items-center px-4 pt-4 sm:pt-6">
+					<CardTitle className="text-lg sm:text-xl md:text-2xl font-bold text-cyan-400 flex flex-col sm:flex-row items-center gap-2 sm:gap-3 text-center sm:text-left">
+						<span className="bg-cyan-500/10 p-1.5 sm:p-2 rounded-md inline-flex shrink-0">
+							<FaFilePdf className="text-cyan-400 w-6 h-6 sm:w-7 sm:h-7" />
 						</span>
-						Currículo em PDF
+						<span className="leading-tight">Currículo em PDF</span>
 					</CardTitle>
-					<p className="text-gray-400 text-sm mt-2 text-center max-w-lg">
+					<p className="text-gray-400 text-xs sm:text-sm mt-2 text-center max-w-lg px-1">
 						Faça upload do seu currículo em PDF. Ele ficará disponível para download no seu portfólio.
 					</p>
 				</CardHeader>
-				<CardContent className="flex flex-col items-center gap-6">
-					<div className="flex flex-col items-center gap-2 w-full">
-						<div className="flex gap-3 w-full justify-center">
+				<CardContent className="flex flex-col items-stretch sm:items-center gap-4 sm:gap-6 px-4 pb-6 sm:pb-8">
+					<div className="flex flex-col items-stretch gap-2 w-full max-w-md mx-auto">
+						<div className="flex flex-col sm:flex-row gap-2 sm:gap-3 w-full sm:justify-center">
 							<Button
 								type="button"
 								className="
-								flex items-center gap-2 bg-gradient-to-r from-cyan-500 
+								w-full sm:w-auto flex items-center justify-center gap-2 bg-gradient-to-r from-cyan-500 
 								to-blue-600 hover:from-cyan-600 hover:to-blue-700 
-								text-white font-medium px-6 py-2 rounded-md shadow"
+								text-white font-medium px-4 sm:px-6 py-2.5 rounded-md shadow text-sm sm:text-base"
 								onClick={handleUploadClick}
 							>
 								<FaUpload />
@@ -115,9 +115,10 @@ export default function ConfigCurriculum() {
 								onClick={handleSave}
 								disabled={!file || isMutating}
 								className="
-								flex items-center gap-2 bg-gradient-to-r from-cyan-500
-								to-blue-600 hover:from-cyan-600 hover:to-blue-700 
-								text-white font-medium px-6 py-2 rounded-md shadow"
+								w-full sm:w-auto flex items-center justify-center gap-2
+								bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 
+								disabled:opacity-45 disabled:from-slate-600 disabled:to-slate-700 disabled:cursor-not-allowed
+								text-white font-medium px-4 sm:px-6 py-2.5 rounded-md shadow text-sm sm:text-base"
 							>
 								{isMutating ? <FaSpinner className="animate-spin" /> : <FaSave />}
 								<span>{isMutating ? 'Salvando...' : 'Salvar'}</span>
@@ -131,20 +132,21 @@ export default function ConfigCurriculum() {
 							/>
 						</div>
 						{fileName && (
-							<span className="text-cyan-400 text-sm mt-1 flex items-center gap-2">
-								<FaFilePdf className="text-cyan-400" />
-								{fileName}
+							<span className="text-cyan-400 text-xs sm:text-sm mt-1 flex items-center justify-center gap-2 min-w-0 px-1">
+								<FaFilePdf className="text-cyan-400 shrink-0" />
+								<span className="truncate text-center">{fileName}</span>
 							</span>
 						)}
 					</div>
 					{localPreviewUrl && (
 						<div className="
-							w-full h-[32rem] max-w-2xl mt-4 rounded-xl overflow-hidden 
-							border border-cyan-900 bg-[#070b14] shadow-inner"
-						>
+							w-full max-w-2xl mt-2 sm:mt-4 rounded-lg sm:rounded-xl overflow-hidden 
+							border border-cyan-900 bg-[#070b14] shadow-inner
+							h-[min(55vh,24rem)] sm:h-[28rem] md:h-[32rem] min-h-[200px]
+						">
 							<iframe
 								src={localPreviewUrl || undefined}
-								className="w-full h-full border-none rounded-xl"
+								className="w-full h-full border-none rounded-lg sm:rounded-xl"
 								title="Pré-visualização do Currículo"
 							></iframe>
 						</div>

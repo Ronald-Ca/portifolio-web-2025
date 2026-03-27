@@ -2,6 +2,7 @@ import { ReactElement } from "react"
 import type { Variants } from "framer-motion"
 
 export interface LoadedSkill {
+    id?: string
     name: string
     stars: number
     icon: ReactElement
